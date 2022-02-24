@@ -1,0 +1,4 @@
+name: Badwars
+version: '${version}'
+main: bedwarsboys.badwars.Badwars
+api-version: 1.18
