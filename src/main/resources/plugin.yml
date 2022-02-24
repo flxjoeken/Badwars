@@ -2,3 +2,9 @@ name: Badwars
 version: '${version}'
 main: bedwarsboys.badwars.Badwars
 api-version: 1.18
+
+commands:
+  setarena:
+    description: Sets the arena
+    usage: /setarena
+    permission: badwars.setarena
