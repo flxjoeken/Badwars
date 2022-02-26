@@ -18,6 +18,7 @@ public final class Badwars extends JavaPlugin {
     public static FileConfiguration CONFIG;
     CommandExecutor setArenaCommand = new SetArenaCommand();
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
+    CommandExecutor pasteArenaCommand = new PasteArenaCommand();
     CommandExecutor configMenu = new ConfigInventoryMenuCommand();
 
     @Override
@@ -27,6 +28,7 @@ public final class Badwars extends JavaPlugin {
         CONFIG = this.getConfig();
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
         Objects.requireNonNull(this.getCommand("savearena")).setExecutor(saveArenaCommand);
+        Objects.requireNonNull(this.getCommand("pastearena")).setExecutor(pasteArenaCommand);
         Objects.requireNonNull(this.getCommand("configMenu")).setExecutor(configMenu);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);

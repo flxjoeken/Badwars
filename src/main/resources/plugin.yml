@@ -12,6 +12,10 @@ commands:
     description: Saves the arena to the file with the name specified.
     usage: /savearena <name>
     permission: badwars.savearena
+  pastearena:
+    description: Loads and pastes the arena to the world
+    usage: /pastearena <name>
+    permission: badwars.pastearena
   configMenu:
     description: lets you config Menus
     usage: /configMenu
