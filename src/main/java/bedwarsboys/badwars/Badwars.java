@@ -1,5 +1,7 @@
 package bedwarsboys.badwars;
 
+import bedwarsboys.badwars.InventoryMenu.ConfigInventoryMenuCommand;
+import bedwarsboys.badwars.InventoryMenu.InventoryMenuActionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public final class Badwars extends JavaPlugin {
@@ -17,6 +18,7 @@ public final class Badwars extends JavaPlugin {
     public static FileConfiguration CONFIG;
     CommandExecutor setArenaCommand = new SetArenaCommand();
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
+    CommandExecutor configMenu = new ConfigInventoryMenuCommand();
 
     @Override
     public void onEnable() {
@@ -25,7 +27,9 @@ public final class Badwars extends JavaPlugin {
         CONFIG = this.getConfig();
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
         Objects.requireNonNull(this.getCommand("savearena")).setExecutor(saveArenaCommand);
+        Objects.requireNonNull(this.getCommand("configMenu")).setExecutor(configMenu);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
+        Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
     }
 
     @Override
