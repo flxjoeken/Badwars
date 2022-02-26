@@ -7,6 +7,8 @@ import org.bukkit.block.Block;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class WorldBlockArea {
     Block[][][] blocks;
@@ -52,7 +54,7 @@ public class WorldBlockArea {
             File f = new File(Badwars.PLUGIN.getDataFolder().getCanonicalPath() + "/" + fileName);
             if (f.exists()) {
                 if (!overwrite) {
-                    Bukkit.getLogger().info(Badwars.PLUGIN_NAME+"Tried saving a file that already exists.");
+                    Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "Tried saving a file that already exists.");
                     return false;
                 }
                 if (!f.delete()) {
@@ -61,11 +63,11 @@ public class WorldBlockArea {
                 }
             }
             if (!f.createNewFile() || !f.canWrite()) {
-                Bukkit.getLogger().info(Badwars.PLUGIN_NAME+"Can't create or write to the file.");
+                Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "Can't create or write to the file.");
                 return false;
             }
             if (blocks.length == 0 || blocks[0].length == 0 || blocks[0][0].length == 0) {
-                Bukkit.getLogger().info(Badwars.PLUGIN_NAME+"The area is 0 blocks wide on one axis.");
+                Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "The area is 0 blocks wide on one axis.");
                 return false;
             }
             FileWriter writer = new FileWriter(f);
@@ -73,22 +75,51 @@ public class WorldBlockArea {
                 for (Block[] block2 : block1) {
                     for (Block block : block2) {
                         if (block == null) {
-                            Bukkit.getLogger().info(Badwars.PLUGIN_NAME+"[WARNING] Block was null");
+                            Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "[WARNING] Block was null");
                             continue;
                         }
                         Location l = block.getLocation();
+                        String w = l.getWorld().getName();
                         int x = l.getBlockX();
                         int y = l.getBlockY();
                         int z = l.getBlockZ();
                         String d = block.getBlockData().getAsString();
                         String m = block.getBlockData().getMaterial().toString();
 
-                        String data = x + ";" + y + ";" + z + ";" + d + ";" + m + System.lineSeparator();
+                        String data = x + ";" + y + ";" + z + ";" + w + ";" + d + ";" + m + System.lineSeparator();
                         writer.write(data);
                     }
                 }
             }
             writer.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean loadBlockArea(String fileName) {
+        try {
+            File f = new File(Badwars.PLUGIN.getDataFolder().getCanonicalPath() + "/" + fileName);
+            if (!f.exists()) {
+                Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "File does not exist: " + fileName);
+                return false;
+            }
+            if (!f.canRead()) {
+                Bukkit.getLogger().info(Badwars.PLUGIN_NAME + "Can't read file.");
+                return false;
+            }
+
+            Scanner reader = new Scanner(f);
+            ArrayList<String> blockList = new ArrayList<>();
+            while (reader.hasNextLine()) {
+                blockList.add(reader.nextLine());
+            }
+            String[] first = blockList.get(0).split(";");
+            Location pos1 = new Location(Bukkit.getWorld(first[3]),
+                    Integer.parseInt(first[0]), Integer.parseInt(first[0]), Integer.parseInt(first[0]));
+            //TODO
             return true;
         } catch (IOException e) {
             e.printStackTrace();
