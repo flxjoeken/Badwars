@@ -15,7 +15,7 @@ public class SummonTestShopCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player p) {
 
-            ShopEntitiy shopEntitiy = new ShopEntitiy(p.getLocation(), InventoryMenu.getMenuNumbers());
+            new ShopEntitiy(p.getLocation(), InventoryMenu.getMenuNumbers());
 
             return true;
         }
