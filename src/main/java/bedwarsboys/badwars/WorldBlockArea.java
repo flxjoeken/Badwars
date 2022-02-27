@@ -92,7 +92,7 @@ public class WorldBlockArea {
      *
      * @param fileName  Where to save the block information
      * @param overwrite If set to true, if the file already exists, it will be overwritten.
-     * @return If saving the area worked or not. False if not. 
+     * @return If saving the area worked or not. False if not.
      */
     public boolean saveBlockArea(String fileName, boolean overwrite) {
         try {
@@ -201,7 +201,7 @@ public class WorldBlockArea {
         return false;
     }
 
-    void pasteArea() {
+    public void pasteArea() {
         for (VirtualBlock[][] v1 : blocks) {
             for (VirtualBlock[] v2 : v1) {
                 for (VirtualBlock block : v2) {

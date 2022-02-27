@@ -1,5 +1,7 @@
-package bedwarsboys.badwars;
+package bedwarsboys.badwars.commands;
 
+import bedwarsboys.badwars.Badwars;
+import bedwarsboys.badwars.WorldBlockArea;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

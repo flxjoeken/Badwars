@@ -1,5 +1,8 @@
 package bedwarsboys.badwars;
 
+import bedwarsboys.badwars.commands.PasteArenaCommand;
+import bedwarsboys.badwars.commands.SaveArenaCommand;
+import bedwarsboys.badwars.commands.SetArenaCommand;
 import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
 import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
 import org.bukkit.Bukkit;
