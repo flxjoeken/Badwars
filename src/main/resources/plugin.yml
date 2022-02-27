@@ -16,7 +16,7 @@ commands:
     description: Loads and pastes the arena to the world
     usage: /pastearena <name>
     permission: badwars.pastearena
-  configMenu:
-    description: lets you config Menus
-    usage: /configMenu
-    permission: badwars.configMenu
+  summontestshop:
+    description: summons a demo villager shop
+    usage: /summontestshop
+    permission: badwars.summontestshop

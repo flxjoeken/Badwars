@@ -1,7 +1,7 @@
 package bedwarsboys.badwars;
 
-import bedwarsboys.badwars.InventoryMenu.ConfigInventoryMenuCommand;
-import bedwarsboys.badwars.InventoryMenu.InventoryMenuActionEvent;
+import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
+import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,10 +16,11 @@ public final class Badwars extends JavaPlugin {
     public static Badwars PLUGIN;
     public static final String PLUGIN_NAME = "[Badwars] ";
     public static FileConfiguration CONFIG;
+
     CommandExecutor setArenaCommand = new SetArenaCommand();
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
     CommandExecutor pasteArenaCommand = new PasteArenaCommand();
-    CommandExecutor configMenu = new ConfigInventoryMenuCommand();
+    CommandExecutor summontestshop = new SummonTestShopCommand();
 
     @Override
     public void onEnable() {
@@ -29,7 +30,7 @@ public final class Badwars extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
         Objects.requireNonNull(this.getCommand("savearena")).setExecutor(saveArenaCommand);
         Objects.requireNonNull(this.getCommand("pastearena")).setExecutor(pasteArenaCommand);
-        Objects.requireNonNull(this.getCommand("configMenu")).setExecutor(configMenu);
+        Objects.requireNonNull(this.getCommand("summontestshop")).setExecutor(summontestshop);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
     }
