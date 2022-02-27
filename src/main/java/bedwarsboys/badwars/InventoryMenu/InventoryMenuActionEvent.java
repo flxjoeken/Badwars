@@ -13,8 +13,9 @@ public class InventoryMenuActionEvent implements Listener {
     @EventHandler
     void onClick(InventoryClickEvent e) {
         if (e.getInventory().getHolder() instanceof Player) {
-            if (((Player) e.getInventory().getHolder()).getMetadata("inMenu").get(0).asBoolean()) {
-                Bukkit.getLogger().info("führe Menü aktion aus");
+            if (!((Player) e.getInventory().getHolder()).getMetadata("inMenu").isEmpty() &&
+            ((Player) e.getInventory().getHolder()).getMetadata("inMenu").get(0).asInt() != -1){
+                InventoryMenu.getAction(((Player) e.getInventory().getHolder()).getMetadata("inMenu").get(0).asInt(), e.getSlot()).doIt();
             }
         }
     }
