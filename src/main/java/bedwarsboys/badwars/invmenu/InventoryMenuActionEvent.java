@@ -1,7 +1,6 @@
 package bedwarsboys.badwars.invmenu;
 
 import bedwarsboys.badwars.Badwars;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
