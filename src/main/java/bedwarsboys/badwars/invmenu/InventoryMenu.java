@@ -23,12 +23,12 @@ public class InventoryMenu{
     protected static int menuNumbers = 0;
     protected static ArrayList<Action[]> actionLists = new ArrayList<>();
 
-    protected int menuNummer;
+    protected int menuNumber;
     protected Inventory inventory;
 
     public InventoryMenu(Inventory inventory, Action[] actions) {
         inventoryMenus.add(this);
-        menuNummer = menuNumbers++;
+        menuNumber = menuNumbers++;
         actionLists.add(actions);
         this.inventory = inventory;
     }
@@ -38,7 +38,7 @@ public class InventoryMenu{
      * @param p Spieler
      */
     public void showToPlayer(Player p) {
-        p.setMetadata(InventoryMenu.MENU_KEY, new FixedMetadataValue(Badwars.PLUGIN, menuNummer));
+        p.setMetadata(InventoryMenu.MENU_KEY, new FixedMetadataValue(Badwars.PLUGIN, menuNumber));
         p.openInventory(inventory);
     }
 
@@ -61,8 +61,8 @@ public class InventoryMenu{
         return (Player p) -> {};
     }
 
-    public int getMenuNummer() {
-        return menuNummer;
+    public int getMenuNumber() {
+        return menuNumber;
     }
 
     public static InventoryMenu getInventoryMenu(int number) {
