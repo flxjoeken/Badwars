@@ -23,17 +23,22 @@ public final class Badwars extends JavaPlugin {
     CommandExecutor setArenaCommand = new SetArenaCommand();
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
     CommandExecutor pasteArenaCommand = new PasteArenaCommand();
-    CommandExecutor summontestshop = new SummonTestShopCommand();
+    CommandExecutor summonTestShopCommand = new SummonTestShopCommand();
+    CommandExecutor configureTeamsCommand = new TeamConfiguration.ConfigureTeamsCommand();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         PLUGIN = this;
         CONFIG = this.getConfig();
+
+        TeamConfiguration.setupTeamConfigMenu();
+
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
         Objects.requireNonNull(this.getCommand("savearena")).setExecutor(saveArenaCommand);
         Objects.requireNonNull(this.getCommand("pastearena")).setExecutor(pasteArenaCommand);
-        Objects.requireNonNull(this.getCommand("summontestshop")).setExecutor(summontestshop);
+        Objects.requireNonNull(this.getCommand("summontestshop")).setExecutor(summonTestShopCommand);
+        Objects.requireNonNull(this.getCommand("configureteams")).setExecutor(configureTeamsCommand);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
     }

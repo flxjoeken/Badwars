@@ -20,3 +20,7 @@ commands:
     description: summons a demo villager shop
     usage: /summontestshop
     permission: badwars.summontestshop
+  configureteams:
+    description: Lets you configure the number of teams and their colors
+    usage: /configureteams
+    permission: badwars.teams.config
