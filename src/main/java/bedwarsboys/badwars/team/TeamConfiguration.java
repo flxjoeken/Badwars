@@ -1,4 +1,4 @@
-package bedwarsboys.badwars;
+package bedwarsboys.badwars.team;
 
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
