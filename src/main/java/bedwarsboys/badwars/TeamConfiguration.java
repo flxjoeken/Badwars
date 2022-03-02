@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -29,9 +30,16 @@ public class TeamConfiguration {
     public static void setupTeamConfigMenu() {
         //Plus Banner
         ItemStack plus = new ItemStack(Material.GREEN_BANNER, 1);
+        ItemMeta plusMeta = plus.getItemMeta();
+        plusMeta.displayName(Component.text("add Team"));
+        plus.setItemMeta(plusMeta);
         bannerSetup(plus, true);
-        //MINUS BANNER
+
+        //Minus Banner
         ItemStack minus = new ItemStack(Material.RED_BANNER, 1);
+        ItemMeta minusMeta = minus.getItemMeta();
+        minusMeta.displayName(Component.text("remove Team"));
+        minus.setItemMeta(minusMeta);
         bannerSetup(minus, false);
 
         menu.setItem(8, plus);
