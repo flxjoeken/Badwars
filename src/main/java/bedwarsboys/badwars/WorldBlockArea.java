@@ -42,7 +42,7 @@ public class WorldBlockArea {
         for (int x = begin.x; x <= end.x; x++) {
             for (int y = begin.y; y <= end.y; y++) {
                 for (int z = begin.z; z <= end.z; z++) {
-                    VirtualBlock block = new VirtualBlock(new Location(pos1.getWorld(), x, y, z), pos1.getWorld().getBlockAt(x, y, z).getBlockData());
+                    VirtualBlock block = new VirtualBlock(new Location(pos1.getWorld(), x, y, z), pos1.getWorld().getBlockAt(x, y, z).getBlockData().clone());
                     //Bukkit.getLogger().info(x + "," + y + "," + z);
                     blocks[x - begin.x][y - begin.y][z - begin.z] = block;
                 }
