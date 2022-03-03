@@ -7,15 +7,15 @@ commands:
   setarena:
     description: Sets the arena
     usage: /setarena <1|2> | <x> <y> <z> <1|2> | <x1> >y1> <z1> <x2> <y2> <z2>
-    permission: badwars.setarena
+    permission: badwars.arena.set
   savearena:
     description: Saves the arena to the file with the name specified.
     usage: /savearena <name>
-    permission: badwars.savearena
+    permission: badwars.arena.save
   pastearena:
     description: Loads and pastes the arena to the world
     usage: /pastearena <name>
-    permission: badwars.pastearena
+    permission: badwars.arena.paste
   summontestshop:
     description: summons a demo villager shop
     usage: /summontestshop
@@ -24,3 +24,15 @@ commands:
     description: Lets you configure the number of teams and their colors
     usage: /configureteams
     permission: badwars.teams.config
+  setteamspawn:
+    description: Sets the spawnpoint of the given team
+    usage: /setteamspawn <1-9>|<color>
+    permission: badwars.teams.setspawn
+  setlobby:
+    description: Sets the lobby spawnpoint
+    usage: /setlobby [<world> <x> <y> <z>]
+    permission: badwars.lobby.set
+  badwars_debug:
+    description: Some debug stuff
+    usage: /bawars_debug ???
+    permission: badwars.debug
