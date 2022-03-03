@@ -22,7 +22,10 @@ public class SetArenaCommand implements CommandExecutor {
             String w = p.getLocation().getWorld().getName();
             double x, y, z;
             if (args.length == 1 || args.length == 4) {
-                if (args.length == 1 && (args[0].equals("1") | args[0].equals("2"))) {
+                if (args.length == 1) {
+                    if (!(args[0].equals("1") | args[0].equals("2"))){
+                        return false;
+                    }
                     //Save Player position as arena bounds 1 or 2
                     w = p.getLocation().getWorld().getName();
                     x = p.getLocation().getBlockX();
