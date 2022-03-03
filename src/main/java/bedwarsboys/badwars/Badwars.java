@@ -1,8 +1,6 @@
 package bedwarsboys.badwars;
 
-import bedwarsboys.badwars.commands.PasteArenaCommand;
-import bedwarsboys.badwars.commands.SaveArenaCommand;
-import bedwarsboys.badwars.commands.SetArenaCommand;
+import bedwarsboys.badwars.commands.*;
 import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
 import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
 import org.bukkit.Bukkit;
@@ -20,11 +18,16 @@ public final class Badwars extends JavaPlugin {
     public static final String PLUGIN_NAME = "[Badwars] ";
     public static FileConfiguration CONFIG;
 
+    public static LobbyManager lobbyManager;
+
     CommandExecutor setArenaCommand = new SetArenaCommand();
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
     CommandExecutor pasteArenaCommand = new PasteArenaCommand();
     CommandExecutor summonTestShopCommand = new SummonTestShopCommand();
     CommandExecutor configureTeamsCommand = new TeamConfiguration.ConfigureTeamsCommand();
+    CommandExecutor setTeamSpawnCommand = new TeamConfiguration.SetTeamSpawnCommand();
+    CommandExecutor setLobbyCommand = new SetLobbyCommand();
+    CommandExecutor bedwars_DebugCommand = new Bedwars_DebugCommand();
 
     @Override
     public void onEnable() {
@@ -33,12 +36,16 @@ public final class Badwars extends JavaPlugin {
         CONFIG = this.getConfig();
 
         TeamConfiguration.setupTeamConfigMenu();
+        lobbyManager = new LobbyManager();
 
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
         Objects.requireNonNull(this.getCommand("savearena")).setExecutor(saveArenaCommand);
         Objects.requireNonNull(this.getCommand("pastearena")).setExecutor(pasteArenaCommand);
         Objects.requireNonNull(this.getCommand("summontestshop")).setExecutor(summonTestShopCommand);
         Objects.requireNonNull(this.getCommand("configureteams")).setExecutor(configureTeamsCommand);
+        Objects.requireNonNull(this.getCommand("setteamspawn")).setExecutor(setTeamSpawnCommand);
+        Objects.requireNonNull(this.getCommand("setlobby")).setExecutor(setLobbyCommand);
+        Objects.requireNonNull(this.getCommand("badwars_debug")).setExecutor(bedwars_DebugCommand);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
     }
