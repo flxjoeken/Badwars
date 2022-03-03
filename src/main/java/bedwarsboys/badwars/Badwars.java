@@ -3,6 +3,7 @@ package bedwarsboys.badwars;
 import bedwarsboys.badwars.commands.*;
 import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
 import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
+import bedwarsboys.badwars.team.TeamConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
