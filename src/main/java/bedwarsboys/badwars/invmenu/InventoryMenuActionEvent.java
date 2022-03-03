@@ -20,7 +20,7 @@ public class InventoryMenuActionEvent implements Listener {
     void onClick(InventoryClickEvent e) {
 
         //only treat clicks outside players inventories
-        if (Objects.requireNonNull(e.getClickedInventory()).getType().equals(InventoryType.PLAYER))
+        if (e.getClickedInventory() == null || e.getClickedInventory().getType().equals(InventoryType.PLAYER))
             return;
 
         if (e.getWhoClicked() instanceof Player player) {
