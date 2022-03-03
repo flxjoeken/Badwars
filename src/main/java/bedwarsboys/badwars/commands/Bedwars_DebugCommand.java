@@ -17,6 +17,17 @@ public class Bedwars_DebugCommand implements CommandExecutor {
             Badwars.lobbyManager.removeLobbyContainer();
             return true;
         }
+        if (args[0].equalsIgnoreCase("startSpawners")){
+            if (!Badwars.lobbyManager.loadSpawners()){
+                sender.sendMessage("Couldn't load arena area.");
+            }
+            Badwars.lobbyManager.startSpawners();
+            return true;
+        }
+        if (args[0].equalsIgnoreCase("stopSpawners")){
+            Badwars.lobbyManager.stopSpawners();
+            return true;
+        }
         return false;
     }
 }
