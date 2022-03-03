@@ -1,5 +1,6 @@
 package bedwarsboys.badwars.team;
 
+import bedwarsboys.badwars.Badwars;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
@@ -130,6 +131,7 @@ public class TeamConfiguration {
         }
         patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_MIDDLE));
         BannerMeta meta = ((BannerMeta) banner.getItemMeta());
+        meta.displayName(banner.getItemMeta().displayName());
         meta.setPatterns(patterns);
         banner.setItemMeta(meta);
     }
