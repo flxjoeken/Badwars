@@ -44,12 +44,12 @@ public class GameConfig implements Listener {
     ArrayList<Location> shopLocations;
 
     public static boolean saveGameConfig() {
-        //TODO
+        //TODO save to Config File
         return true;
     }
 
     public static boolean loadGameConfig() {
-        //TODO
+        //TODO load from Config File
         return true;
     }
 
@@ -72,23 +72,25 @@ public class GameConfig implements Listener {
             GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt());
 
             switch (e.getPlayer().getMetadata(CONFIG_STATE).get(0).asInt()) {
-                case 0:
+                case 0 -> {
                     gameConfig.teams.add(new Team(e.message().toString(), null));
-
                     p.setMetadata(CONFIG_STATE, new FixedMetadataValue(Badwars.PLUGIN, 1));
-
                     p.sendMessage(Component.text("Du hast ein neues Team mit der Farbe" + e.message() + "erstellt")
                             .append(Component.text("Stelle dich auf ihren Spawn und tippe"))
                             .append(Component.text("hier").color(TextColor.color(Color.RED.asRGB()))));
-                    break;
-                case 1:
-                    gameConfig.teams.get(gameConfig.teams.size()-1).setSpawnPoint(p.getLocation());
+                }
+                case 1 -> {
+                    gameConfig.teams.get(gameConfig.teams.size() - 1).setSpawnPoint(p.getLocation());
                     p.sendMessage(Component.text("Der Spawnpoint wurde gesetzt"));
-
+                }
             }
         }
     }
 
+    /**
+     * Soll in Zukunft eine funktionerende Test GameConfig zurückgeben.
+     * @return GameConfig for test purposes
+     */
     public static GameConfig getDemoConfig() {
         GameConfig gameConfig = new GameConfig();
         Team team1 = new Team("RED", Bukkit.getWorlds().get(0).getSpawnLocation());
