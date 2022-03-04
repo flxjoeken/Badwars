@@ -12,10 +12,12 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 
 public class LobbyManager {
-
     Location lobbyLocation;
     WorldBlockArea lobbyBackup;
 
+
+    //TODO move spawners in own class, dont you think so
+    //zumindest ist sonst der Name Lobby Manager ja ein bisschen irreführend
     static ArrayList<Location> copperSpawner = new ArrayList<>();
     static ArrayList<Location> ironSpawner = new ArrayList<>();
     static ArrayList<Location> goldSpawner = new ArrayList<>();
