@@ -25,8 +25,6 @@ public class TeamConfiguration {
 
     public static Inventory menu = Bukkit.createInventory(null, 18, Component.text("Team Configurations"));
     public static InventoryMenu invMenu;
-    public static int teamCount = 2;
-    public static boolean[] activeTeams = {true, true, true, true, true, true, true, true};
 
     public static void setupTeamConfigMenu() {
         //Plus Banner
@@ -49,14 +47,14 @@ public class TeamConfiguration {
         menu.setItem(0, new ItemStack(Material.RED_WOOL));
         menu.setItem(1, new ItemStack(Material.BLUE_WOOL));
         Action aPlus = p -> {
-            if (teamCount < 8) {
-                teamCount++;
+            if (TeamManager.teamCount < 8) {
+                TeamManager.teamCount++;
                 updateTeams();
             }
         };
         Action aMinus = p -> {
-            if (teamCount > 2 && activeTeamCount() > 2) {
-                teamCount--;
+            if (TeamManager.teamCount > 2 && activeTeamCount() > 2) {
+                TeamManager.teamCount--;
                 updateTeams();
             }
         };
@@ -83,8 +81,8 @@ public class TeamConfiguration {
 
     private static int activeTeamCount() {
         int c = 0;
-        for (int i = 0; i < teamCount; i++) {
-            c += activeTeams[i] ? 1 : 0;
+        for (int i = 0; i < TeamManager.teamCount; i++) {
+            c += TeamManager.activeTeams[i] ? 1 : 0;
         }
         return c;
     }
@@ -98,26 +96,21 @@ public class TeamConfiguration {
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
-                activeTeams[slot - 9] = false;
+                TeamManager.activeTeams[slot - 9] = false;
             }
         } else {
             menu.setItem(slot, null);
-            activeTeams[slot - 9] = true;
+            TeamManager.activeTeams[slot - 9] = true;
         }
         updateTeams();
     }
 
     private static void updateTeams() {
-        menu.setItem(0, new ItemStack(Material.RED_WOOL));
-        menu.setItem(1, new ItemStack(Material.BLUE_WOOL));
-        menu.setItem(2, new ItemStack(Material.GREEN_WOOL));
-        menu.setItem(3, new ItemStack(Material.YELLOW_WOOL));
-        menu.setItem(4, new ItemStack(Material.PINK_WOOL));
-        menu.setItem(5, new ItemStack(Material.PURPLE_WOOL));
-        menu.setItem(6, new ItemStack(Material.BLACK_WOOL));
-        menu.setItem(7, new ItemStack(Material.WHITE_WOOL));
+        for (TeamManager.BadwarsTeam bt : TeamManager.teams) {
+            menu.setItem(bt.id, new ItemStack(bt.material));
+        }
         for (int i = 0; i < 8; i++) {
-            if (i >= teamCount || menu.getContents()[i + 9] != null) {
+            if (i >= TeamManager.teamCount || menu.getContents()[i + 9] != null) {
                 menu.setItem(i, null);
             }
 
@@ -162,6 +155,7 @@ public class TeamConfiguration {
                     } catch (NumberFormatException ignored) {
                     }
                     // check if input is a colors name
+                    //TODO: Change to new system from TeamManager.teams
                     int textNum = switch (args[0]) {
                         case "red" -> 0;
                         case "blue" -> 1;
@@ -182,9 +176,9 @@ public class TeamConfiguration {
                         Badwars.CONFIG.set("teams." + num + ".y", p.getLocation().getBlockY());
                         Badwars.CONFIG.set("teams." + num + ".z", p.getLocation().getBlockZ());
                         Badwars.PLUGIN.saveConfig();
-                        sender.sendMessage(Badwars.PLUGIN_NAME+"Successfully saved spawnpoint.");
+                        sender.sendMessage(Badwars.PLUGIN_NAME + "Successfully saved spawnpoint.");
                     } else {
-                        sender.sendMessage(Badwars.PLUGIN_NAME+"Input was not valid.");
+                        sender.sendMessage(Badwars.PLUGIN_NAME + "Input was not valid.");
                     }
                     return true;
 
@@ -192,7 +186,7 @@ public class TeamConfiguration {
                 }
                 return false;
             }
-            sender.sendMessage(Badwars.PLUGIN_NAME+"This command is currently only for players.");
+            sender.sendMessage(Badwars.PLUGIN_NAME + "This command is currently only for players.");
             return true;
         }
     }
