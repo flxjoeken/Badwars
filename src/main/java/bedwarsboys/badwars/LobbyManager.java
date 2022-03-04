@@ -1,17 +1,15 @@
 package bedwarsboys.badwars;
 
+import bedwarsboys.badwars.WorldBlockArea.VirtualBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-import bedwarsboys.badwars.WorldBlockArea.VirtualBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
 
 public class LobbyManager {
 
