@@ -1,6 +1,7 @@
 package bedwarsboys.badwars.commands;
 
 import bedwarsboys.badwars.Badwars;
+import bedwarsboys.badwars.itemspawner.Spawner;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,14 +19,11 @@ public class Bedwars_DebugCommand implements CommandExecutor {
             return true;
         }
         if (args[0].equalsIgnoreCase("startSpawners")){
-            if (!Badwars.lobbyManager.loadSpawners()){
-                sender.sendMessage("Couldn't load arena area.");
-            }
-            Badwars.lobbyManager.startSpawners();
+            Spawner.startSpawners();
             return true;
         }
         if (args[0].equalsIgnoreCase("stopSpawners")){
-            Badwars.lobbyManager.stopSpawners();
+            Spawner.stopSpawners();
             return true;
         }
         return false;
