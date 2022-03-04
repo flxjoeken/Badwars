@@ -3,8 +3,11 @@ package bedwarsboys.badwars;
 import it.unimi.dsi.fastutil.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Bed;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -214,6 +217,20 @@ public class WorldBlockArea {
                     //Bukkit.getLogger().info(l.toString() + " :: " + d.toString());
                     l.getBlock().setType(d.getMaterial());
                     l.getBlock().setBlockData(d);
+                    if (d.getMaterial().data == Bed.class){
+                        //Bukkit.getLogger().info("BETT");
+                        BlockFace f = ((Bed)l.getBlock().getBlockData()).getFacing();
+                        Bed.Part p = ((Bed)l.getBlock().getBlockData()).getPart();
+                        if (p == Bed.Part.HEAD && (f == BlockFace.SOUTH || f == BlockFace.EAST)) {
+                            //l.getBlock().setType(Material.BEDROCK);
+                            l.getBlock().getRelative(f.getOppositeFace()).setType(d.getMaterial());
+                            //l.getBlock().getRelative(f.getOppositeFace()).setBlockData(d);
+                            Bed b = ((Bed)l.getBlock().getRelative(f.getOppositeFace()).getBlockData());
+                            b.setFacing(f);
+                            b.setPart(Bed.Part.FOOT);
+                            l.getBlock().getRelative(f.getOppositeFace()).setBlockData(b);
+                        }
+                    }
                 }
             }
         }
