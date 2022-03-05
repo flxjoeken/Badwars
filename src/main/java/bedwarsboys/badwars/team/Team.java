@@ -49,8 +49,20 @@ public class Team  {
         im.showToPlayer(p);
     }
 
-    public Material getColoredWoolMaterial() {
-        return Material.getMaterial(teamColor+"_WOOL");
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
+    public String getTeamColor() {
+        return teamColor;
+    }
+
+    public void setTeamColor(String teamColor) {
+        this.teamColor = teamColor;
     }
 
     public Location getSpawnPoint() {
@@ -61,9 +73,15 @@ public class Team  {
         this.spawnPoint = spawnPoint;
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public Block getBed() {
+        return bed;
     }
 
+    public void setBed(Block bed) {
+        this.bed = bed;
+    }
 
+    public Material getColoredWoolMaterial() {
+        return Material.getMaterial(teamColor+"_WOOL");
+    }
 }
