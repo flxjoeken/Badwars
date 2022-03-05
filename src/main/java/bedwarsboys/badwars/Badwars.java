@@ -1,14 +1,16 @@
 package bedwarsboys.badwars;
 
 import bedwarsboys.badwars.commands.*;
-import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
+import bedwarsboys.badwars.game.GameConfig;
 import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
+import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
 import bedwarsboys.badwars.team.TeamConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -49,6 +51,7 @@ public final class Badwars extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("badwars_debug")).setExecutor(bedwars_DebugCommand);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
+        ConfigurationSerialization.registerClass(GameConfig.class);
     }
 
     @Override

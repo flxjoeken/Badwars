@@ -10,19 +10,22 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-public class GameConfig implements Listener {
+public class GameConfig implements Listener, ConfigurationSerializable {
 
     protected static ArrayList<GameConfig> gameConfigs = new ArrayList<>();
 
-    static final String CONFIGURES_GAME = "inGameConig";
+    static final String CONFIGURES_GAME = "inGameConfig";
     static final String GAME_CONFIG_MODE =  "configState";
 
     //configure Teams procedure Chat Text.
@@ -142,7 +145,6 @@ public class GameConfig implements Listener {
      * Soll in Zukunft eine funktionierende test GameConfig zurückgeben.
      * @return GameConfig for test purposes
      */
-    @Deprecated
     public static GameConfig getDemoConfig() {
         //TODO complete Demo Config
         GameConfig gameConfig = new GameConfig();
@@ -158,5 +160,16 @@ public class GameConfig implements Listener {
 
 
         return gameConfig;
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        //TODO serialize
+        return null;
+    }
+
+    public static GameConfig deserialize(Map<String, Object> map) {
+        //TODO deserialize
+        return null;
     }
 }

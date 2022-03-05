@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 //should be implemented in own class?
-public class Team  {
+public class Team {
 
     ArrayList<Player> players;
     String teamColor;
