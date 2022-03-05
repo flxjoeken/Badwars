@@ -7,14 +7,13 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
@@ -44,12 +43,12 @@ public class GameConfig implements Listener {
             .append(Component.text(NamedTextColor.WHITE.toString()).color(NamedTextColor.WHITE));
     static final TextComponent ADD_SPAWN_MESSAGE = Component.text("Stelle dich nun auf den Wiedereinstiegspunkt des Teams und tippe ")
             .append(Component.text("spawn").color(NamedTextColor.RED));
-    static final TextComponent ADDED_SPAWN_MESSAGE = Component.text("Der Wiedereinstiegspunkt von Team");
-    static final TextComponent ADDED_SPAWN_MESSAGE1 = Component.text("wurde erfolgreich erfasst");
-    static final TextComponent CLICK_BED_MESSAGE = Component.text("Klicke auf das Bett des Teams");
-    static final TextComponent ADDED_BED_MESSAGE = Component.text("Das Bett von Team");
+    static final TextComponent ADDED_SPAWN_MESSAGE = Component.text("Der Wiedereinstiegspunkt von Team ");
+    static final TextComponent ADDED_SPAWN_MESSAGE1 = Component.text(" wurde erfolgreich erfasst");
+    static final TextComponent ADD_BED_MESSAGE = Component.text("Klicke nun auf das Bett des Teams");
+    static final TextComponent ADDED_BED_MESSAGE = Component.text("Das Bett von Team ");
     static final TextComponent ADDED_BED_MESSAGE1 = Component.text("wurde erfolgreich erfasst. ");
-    static final TextComponent NEW_TEAM_MESSAGE = Component.text("Möchtest du ein weiteres Team hinzufügen dann tippe ")
+    static final TextComponent ADD_TEAM_MESSAGE = Component.text("Möchtest du ein weiteres Team hinzufügen dann tippe ")
             .append(Component.text("weiter ").color(NamedTextColor.RED))
             .append(Component.text("sonst tippe "))
             .append(Component.text("fertig").color(NamedTextColor.RED))
@@ -67,26 +66,24 @@ public class GameConfig implements Listener {
      * @param p Player
      */
     public static void createGameConfig(Player p) {
+        gameConfigs.add(new GameConfig());
 
-        GameConfig gameConfig = new GameConfig();
-
-        int configNum = gameConfigs.size();
-        gameConfigs.add(gameConfig);
-
-        p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, configNum));
+        p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, gameConfigs.size()-1));
         p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
+
         p.sendMessage(BEGIN_MESSAGE);
+        p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
     }
 
     @EventHandler
-    private void createGameConfigEvent(AsyncChatEvent e) {
+    private static void gameConfigChatEvent(AsyncChatEvent e) {
         if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
             Player p = e.getPlayer();
             GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
 
             // there are several things to configure choose from them by changing the GAME_CONFIG_MODE metadata:
             // 0: add new team by color
-            // 1:
+            // 1: add Spawnpoint to team
             switch (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt()) {
                 case 0 -> {
                     gameConfig.teams.add(new Team(e.message().toString(), null));
@@ -94,8 +91,38 @@ public class GameConfig implements Listener {
                     p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1)); // jump to next config Mode
                 }
                 case 1 -> {
-                    gameConfig.teams.get(gameConfig.teams.size() - 1).setSpawnPoint(p.getLocation());
-                    p.sendMessage(Component.text("Der Spawnpoint wurde gesetzt"));
+                    Team lastTeam = gameConfig.teams.get(gameConfig.teams.size() - 1);
+                    lastTeam.setSpawnPoint(p.getLocation());
+                    p.sendMessage(ADDED_SPAWN_MESSAGE.append(Component.text(lastTeam.getTeamColor())).append(ADDED_SPAWN_MESSAGE1));
+                    p.sendMessage(ADD_BED_MESSAGE);
+                    p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 2));
+                }
+                case 3 -> {
+                    if (e.message().contains(Component.text("fertig"))) {
+                        e.getPlayer().removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
+                        e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
+                    } else if (e.message().contains(Component.text("weiter"))) {
+                        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
+                        p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    private static void gameConfigClickEvent(PlayerInteractEvent e) {
+        if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
+            Player p = e.getPlayer();
+            GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
+
+            if (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt() == 2) {
+                if (e.getMaterial().toString().contains("BED")) {
+                    gameConfig.beds.add(e.getClickedBlock());
+                    p.sendMessage(ADDED_BED_MESSAGE
+                            .append(Component.text(gameConfig.teams.get(gameConfig.teams.size()-1).getTeamColor()))
+                            .append(ADDED_BED_MESSAGE1));
+                    p.sendMessage(ADD_TEAM_MESSAGE);
                 }
             }
         }
