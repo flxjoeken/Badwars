@@ -57,7 +57,7 @@ public class GameConfig implements Listener, ConfigurationSerializable {
             .append(Component.text("fertig").color(NamedTextColor.RED))
             .append(Component.text(". "));
 
-    //TODO configure Spawns chat text
+    //TODO configure Spawners chat text + logic
 
     ArrayList<Team> teams;
     ArrayList<Spawner> spawners;
