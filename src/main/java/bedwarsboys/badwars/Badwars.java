@@ -51,7 +51,7 @@ public final class Badwars extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("badwars_debug")).setExecutor(bedwars_DebugCommand);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
-        ConfigurationSerialization.registerClass(GameConfig.class);
+        Bukkit.getServer().getPluginManager().registerEvents(new GameConfig.GameConfigEvents(), PLUGIN);
     }
 
     @Override

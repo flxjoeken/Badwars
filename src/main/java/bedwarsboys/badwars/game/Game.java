@@ -29,7 +29,7 @@ public class Game {
 
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-            GameConfig.createGameConfig((Player) sender);
+            GameConfig.letPlayerCreateNewConfig((Player) sender);
             return true;
         }
     }
