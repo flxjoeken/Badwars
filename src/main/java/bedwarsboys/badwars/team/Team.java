@@ -1,8 +1,10 @@
 package bedwarsboys.badwars.team;
 
+import bedwarsboys.badwars.Badwars;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,30 +21,34 @@ import java.util.Collection;
 public class Team {
 
     ArrayList<Player> players;
-    String teamColor;
+    /**
+     * Every in-game team has a hardcoded team that decides it's name, id and color
+     */
+    TEAMS team;
     Location spawnPoint;
     Block bed;
 
     /**
-     * teamColor must be a color of the Minecraft wools
-     * @param teamColor the Color of the team
+     * Create a new Team
+     * @param team the ID of the team
      * @param spawnPoint spawnLocation
      */
-    public Team(String teamColor, Location spawnPoint) {
+    public Team(TEAMS team, Location spawnPoint) {
         this.spawnPoint = spawnPoint;
-        this.teamColor = teamColor;
+        this.team = team;
     }
 
     /**
-     * lets a Player p select a team from a Collection of Teams
-     * @param p Player who'll choose
-     * @param teams A collection of teams to choose from
+     * Lets Player p select a team from a Collection of Teams
+     * @param p The player to show the menu to
+     * @param teams The collection of teams to choose from
      */
-    public static void selectTeamMenu(Player p, Collection<Team> teams) {
-        Inventory iv = Bukkit.createInventory(null, 9, Component.text("select Team: "));
+    //TODO
+    public static void selectTeamMenu(Player p, Collection<TEAMS> teams) {
+        Inventory iv = Bukkit.createInventory(null, 9, Component.text("Select Team: "));
         InventoryMenu im;
-        for (Team t : teams) {
-            iv.addItem(new ItemStack(t.getColoredWoolMaterial()));
+        for (TEAMS t : teams) {
+            iv.addItem(new ItemStack(t.material));
         }
         Action[] actions = {};
         im = new InventoryMenu(iv, actions);
@@ -57,12 +63,12 @@ public class Team {
         this.players = players;
     }
 
-    public String getTeamColor() {
-        return teamColor;
+    public TEAMS getTeamColor() {
+        return team;
     }
 
-    public void setTeamColor(String teamColor) {
-        this.teamColor = teamColor;
+    public void setTeamColor(TEAMS teamId) {
+        this.team = teamId;
     }
 
     public Location getSpawnPoint() {
@@ -81,7 +87,27 @@ public class Team {
         this.bed = bed;
     }
 
-    public Material getColoredWoolMaterial() {
-        return Material.getMaterial(teamColor+"_WOOL");
+    public enum TEAMS {
+        RED(0, "red", Material.RED_WOOL, NamedTextColor.RED),
+        BLUE(1, "blue", Material.BLUE_WOOL, NamedTextColor.BLUE),
+        GREEN(2, "green", Material.GREEN_WOOL, NamedTextColor.GREEN),
+        YELLOW(3, "yellow", Material.YELLOW_WOOL, NamedTextColor.YELLOW),
+        PINK(4, "pink", Material.PINK_WOOL, NamedTextColor.LIGHT_PURPLE),
+        PURPLE(5, "purple", Material.PURPLE_WOOL, NamedTextColor.DARK_PURPLE),
+        BLACK(6, "black", Material.BLACK_WOOL, NamedTextColor.BLACK),
+        WHITE(7, "white", Material.WHITE_WOOL, NamedTextColor.WHITE);
+
+        final int id;
+        final String name;
+        final Material material;
+        final NamedTextColor textColor;
+
+        TEAMS(int id, String name, Material material, NamedTextColor textColor) {
+            this.id = id;
+            this.name = name;
+            this.material = material;
+            this.textColor = textColor;
+        }
     }
+
 }
