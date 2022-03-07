@@ -23,10 +23,14 @@ import java.util.ArrayList;
 
 public class TeamConfiguration {
 
-    public static Inventory menu = Bukkit.createInventory(null, 18, Component.text("Team Configurations"));
-    public static InventoryMenu invMenu;
+    public Inventory menu = Bukkit.createInventory(null, 18, Component.text("Team Configurations"));
+    public InventoryMenu invMenu;
 
-    public static void setupTeamConfigMenu() {
+    public TeamConfiguration(){
+
+    }
+
+    public void setupTeamConfigMenu() {
         //Plus Banner
         ItemStack plus = new ItemStack(Material.GREEN_BANNER, 1);
         ItemMeta plusMeta = plus.getItemMeta();
@@ -79,7 +83,7 @@ public class TeamConfiguration {
         invMenu = new InventoryMenu(menu, actionList.toArray(new Action[0]));
     }
 
-    private static int activeTeamCount() {
+    private int activeTeamCount() {
         int c = 0;
         for (int i = 0; i < TeamManager.teamCount; i++) {
             c += TeamManager.activeTeams[i] ? 1 : 0;
@@ -87,12 +91,12 @@ public class TeamConfiguration {
         return c;
     }
 
-    private static void doTeamAction(Player p, int slot) {
+    private void doTeamAction(Player p, int slot) {
         if (menu.getContents()[slot] != null)
             p.sendMessage("You clicked " + slot + "!");
     }
 
-    private static void toggleTeamActive(Player p, int slot) {
+    private void toggleTeamActive(Player p, int slot) {
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
@@ -105,7 +109,7 @@ public class TeamConfiguration {
         updateTeams();
     }
 
-    private static void updateTeams() {
+    private void updateTeams() {
         for (TeamManager.BadwarsTeam bt : TeamManager.teams) {
             menu.setItem(bt.id, new ItemStack(bt.material));
         }
@@ -117,7 +121,7 @@ public class TeamConfiguration {
         }
     }
 
-    private static void bannerSetup(ItemStack banner, boolean isPlus) {
+    private void bannerSetup(ItemStack banner, boolean isPlus) {
         ArrayList<Pattern> patterns = new ArrayList<>();
         if (isPlus) {
             patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_CENTER));
@@ -127,68 +131,6 @@ public class TeamConfiguration {
         meta.displayName(banner.getItemMeta().displayName());
         meta.setPatterns(patterns);
         banner.setItemMeta(meta);
-    }
-
-    public static class ConfigureTeamsCommand implements CommandExecutor {
-
-        @Override
-        public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-            if (!(sender instanceof Player)) return false;
-            invMenu.showToPlayer((Player) sender);
-            return true;
-        }
-    }
-
-    public static class SetTeamSpawnCommand implements CommandExecutor {
-
-        @Override
-        public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-            if (sender instanceof Player p) {
-                if (args.length == 1) {
-                    // see if input is a number
-                    boolean isNum = false;
-                    int num = -1;
-                    try {
-                        // if input is a number, assign it to num
-                        num = Integer.parseInt(args[0]);
-                        // if (num <= 7) isNum = true;
-                    } catch (NumberFormatException ignored) {
-                    }
-                    // check if input is a colors name
-                    //TODO: Change to new system from TeamManager.teams
-                    int textNum = switch (args[0]) {
-                        case "red" -> 0;
-                        case "blue" -> 1;
-                        case "green" -> 2;
-                        case "yellow" -> 3;
-                        case "pink" -> 4;
-                        case "purple" -> 5;
-                        case "black" -> 6;
-                        case "white" -> 7;
-                        default -> -1;
-                    };
-                    if (textNum != -1) {
-                        num = textNum;
-                    }
-                    // assign the spawnpoint for given team if input was valid
-                    if (num != -1) {
-                        Badwars.CONFIG.set("teams." + num + ".x", p.getLocation().getBlockX());
-                        Badwars.CONFIG.set("teams." + num + ".y", p.getLocation().getBlockY());
-                        Badwars.CONFIG.set("teams." + num + ".z", p.getLocation().getBlockZ());
-                        Badwars.PLUGIN.saveConfig();
-                        sender.sendMessage(Badwars.PLUGIN_NAME + "Successfully saved spawnpoint.");
-                    } else {
-                        sender.sendMessage(Badwars.PLUGIN_NAME + "Input was not valid.");
-                    }
-                    return true;
-
-
-                }
-                return false;
-            }
-            sender.sendMessage(Badwars.PLUGIN_NAME + "This command is currently only for players.");
-            return true;
-        }
     }
 
 }
