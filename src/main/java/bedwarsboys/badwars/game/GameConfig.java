@@ -19,30 +19,38 @@ import java.util.ArrayList;
 
 /**
  * Represents a configuration of a Badwars Game. You can let Players configure the Game via Chat.
+ *
  * @author felix, aaron
  */
 public class GameConfig {
 
     //FixedMetadata Keys
     static final String CONFIGURES_GAME = "inGameConfig";
-    static final String GAME_CONFIG_MODE =  "configState";
+    static final String GAME_CONFIG_MODE = "configState";
     //configure Teams Chat Text.
     static final TextComponent BEGIN_MESSAGE = Component
             .text("Du möchtest ein Bedwars Spiel konfigurieren. Das du kannst jederzeit mit")
             .append(Component.text(" exit ")
-            .color(NamedTextColor.RED))
+                    .color(NamedTextColor.RED))
             .append(Component.text("beenden. Tippe "))
             .append(Component.text("weiter ").color(NamedTextColor.RED))
             .append(Component.text("um fortzufahren. "));
     static final TextComponent SELECT_TEAM_COLOR_MESSAGE = Component
             .text("Du möchtest ein neues Team hinzufügen, wähle dazu eine Farbe aus folgenden aus: ")
-            .append(Component.text(NamedTextColor.RED.toString()).color(NamedTextColor.RED)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.BLUE.toString()).color(NamedTextColor.BLUE)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.GREEN.toString()).color(NamedTextColor.GREEN)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.YELLOW.toString()).color(NamedTextColor.YELLOW)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.LIGHT_PURPLE.toString()).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.DARK_PURPLE.toString()).color(NamedTextColor.DARK_PURPLE)).append(Component.text(", "))
-            .append(Component.text(NamedTextColor.BLACK.toString()).color(NamedTextColor.BLACK)).append(Component.text(", "))
+            .append(Component.text(NamedTextColor.RED.toString()).color(NamedTextColor.RED))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.BLUE.toString()).color(NamedTextColor.BLUE))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.GREEN.toString()).color(NamedTextColor.GREEN))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.YELLOW.toString()).color(NamedTextColor.YELLOW))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.LIGHT_PURPLE.toString()).color(NamedTextColor.LIGHT_PURPLE))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.DARK_PURPLE.toString()).color(NamedTextColor.DARK_PURPLE))
+            .append(Component.text(", "))
+            .append(Component.text(NamedTextColor.BLACK.toString()).color(NamedTextColor.BLACK))
+            .append(Component.text(", "))
             .append(Component.text(NamedTextColor.WHITE.toString()).color(NamedTextColor.WHITE));
     static final TextComponent ADD_SPAWN_MESSAGE = Component.text("Stelle dich nun auf den Wiedereinstiegspunkt des Teams und tippe ")
             .append(Component.text("spawn").color(NamedTextColor.RED));
@@ -76,12 +84,13 @@ public class GameConfig {
 
     /**
      * Creates a new GameConfig and lets a Player configure it with help of the Chat.
+     *
      * @param p Player
      */
     public static void letPlayerCreateNewConfig(Player p) {
         gameConfigs.add(new GameConfig());
 
-        p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, gameConfigs.size()-1));
+        p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, gameConfigs.size() - 1));
         p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
 
         p.sendMessage(BEGIN_MESSAGE);
@@ -89,6 +98,7 @@ public class GameConfig {
 
     /**
      * saves the GameConfig into the plugins Config file
+     *
      * @return if save was successful
      */
     public static boolean saveGameConfig() {
@@ -98,6 +108,7 @@ public class GameConfig {
 
     /**
      * loads GameConfig from the plugin's configuration file
+     *
      * @return the configs number, -1 if an error occurred
      */
     public static int loadGameConfig() {
@@ -107,6 +118,7 @@ public class GameConfig {
 
     /**
      * Soll in Zukunft eine funktionierende test GameConfig zurückgeben.
+     *
      * @return GameConfig for test purposes
      */
     public static GameConfig getDemoConfig() {
@@ -120,8 +132,6 @@ public class GameConfig {
         teams.add(team1);
         teams.add(team2);
         gameConfig.teams = teams;
-
-
 
         return gameConfig;
     }
@@ -191,7 +201,7 @@ public class GameConfig {
 
                 if (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt() == 3) {
                     if (e.getClickedBlock().getType().toString().contains("BED")) {
-                        gameConfig.teams.get(gameConfig.teams.size()-1).setBedlocation(e.getClickedBlock().getLocation());
+                        gameConfig.teams.get(gameConfig.teams.size() - 1).setBedlocation(e.getClickedBlock().getLocation());
                         player.sendMessage(ADDED_BED_MESSAGE
                                 .append(Component.text(gameConfig.teams.get(gameConfig.teams.size() - 1).getTeamColor() + " "))
                                 .append(ADDED_BED_MESSAGE1));
