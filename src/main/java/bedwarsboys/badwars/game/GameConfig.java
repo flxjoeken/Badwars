@@ -9,17 +9,13 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Represents a configuration of a Badwars Game. You can let Players configure the Game via Chat.
@@ -35,7 +31,7 @@ public class GameConfig {
 
     //configure Teams Chat Text.
     static final TextComponent BEGIN_MESSAGE = Component
-            .text("Du möchtest ein Bedwars Spiel konfigurieren, du kannst jederzeit mit")
+            .text("Du möchtest ein Bedwars Spiel konfigurieren. Das du kannst jederzeit mit")
             .append(Component.text(" exit ")
             .color(NamedTextColor.RED))
             .append(Component.text("beenden. Tippe "))
@@ -63,12 +59,14 @@ public class GameConfig {
             .append(Component.text("sonst tippe "))
             .append(Component.text("fertig").color(NamedTextColor.RED))
             .append(Component.text(". "));
+    static final TextComponent FINISHED_CONFIG = Component.text("Du hast das Spiel erfolgreich konfiguriert")
+            .append(Component.newline())
+            .append(Component.text("goodbye!"));
 
     //TODO configure Spawners chat text + logic
 
     ArrayList<Team> teams;
     ArrayList<Spawner> spawners;
-    ArrayList<Block> beds;
     ArrayList<Location> shopLocations;
 
     /**
@@ -79,7 +77,7 @@ public class GameConfig {
         gameConfigs.add(new GameConfig());
 
         p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, gameConfigs.size()-1));
-        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, -1));
+        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
 
         p.sendMessage(BEGIN_MESSAGE);
     }
@@ -88,40 +86,52 @@ public class GameConfig {
         //reacts to chat inputs from Player while configuration
         @EventHandler
         public void gameConfigChatEvent(AsyncChatEvent e) {
-            e.getPlayer().sendMessage("event started");
+            e.getPlayer().sendMessage("event started in mode: " + e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt());
+
             if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
                 Player p = e.getPlayer();
                 GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
 
                 // there are several things to configure choose from them by changing the GAME_CONFIG_MODE metadata:
-                // 0: add new team by color
-                // 1: add Spawnpoint to team
+                //  0: Start configuration message
+                //  1: add new team by color
+                //  2: add Spawnpoint to team
                 switch (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt()) {
-                    case -1 -> {
-                        if (e.message().contains(Component.text("weiter"))) {
-                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
+                    case 0 -> {
+                        if (e.message() instanceof TextComponent && ((TextComponent) e.message()).content().contains("weiter")) {
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
                             p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
                         }
                     }
-                    case 0 -> {
-                        gameConfig.teams.add(new Team(e.message().toString(), null));
-                        p.sendMessage(ADD_SPAWN_MESSAGE);
-                        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1)); // jump to next config Mode
-                    }
                     case 1 -> {
+                        if (e.message() instanceof TextComponent) {
+                            e.getPlayer().sendMessage("actual 1");
+                            String messagestr = ((TextComponent) e.message()).content();
+                            //TODO test if message is a BedColor
+
+                            gameConfig.teams.add(new Team(messagestr, null));
+                            p.sendMessage(ADD_SPAWN_MESSAGE);
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 2)); // jump to next config Mode
+                        }
+                    }
+                    case 2 -> {
                         Team lastTeam = gameConfig.teams.get(gameConfig.teams.size() - 1);
                         lastTeam.setSpawnPoint(p.getLocation());
                         p.sendMessage(ADDED_SPAWN_MESSAGE.append(Component.text(lastTeam.getTeamColor())).append(ADDED_SPAWN_MESSAGE1));
                         p.sendMessage(ADD_BED_MESSAGE);
-                        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 2));
+                        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 3));
                     }
-                    case 3 -> {
-                        if (e.message().contains(Component.text("fertig"))) {
-                            e.getPlayer().removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
-                            e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
-                        } else if (e.message().contains(Component.text("weiter"))) {
-                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
-                            p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                    case 4 -> {
+                        if (e.message() instanceof TextComponent) {
+                            if (((TextComponent) e.message()).content().contains("fertig")) {
+                                e.getPlayer().removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
+                                e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
+                                p.sendMessage(FINISHED_CONFIG);
+
+                            } else if (((TextComponent) e.message()).content().contains("weiter")) {
+                                p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
+                                p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                            }
                         }
                     }
                 }
@@ -131,17 +141,19 @@ public class GameConfig {
         //reacts to Players clicks while they configure the Game
         @EventHandler
         public void gameConfigClickEvent(PlayerInteractEvent e) {
-            if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
-                Player p = e.getPlayer();
-                GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
+            if (e.getPlayer().hasMetadata(CONFIGURES_GAME) && e.getClickedBlock() != null) {
 
-                if (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt() == 2) {
-                    if (e.getMaterial().toString().contains("BED")) {
-                        gameConfig.beds.add(e.getClickedBlock());
-                        p.sendMessage(ADDED_BED_MESSAGE
-                                .append(Component.text(gameConfig.teams.get(gameConfig.teams.size() - 1).getTeamColor()))
+                Player player = e.getPlayer();
+                GameConfig gameConfig = GameConfig.gameConfigs.get(player.getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
+
+                if (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt() == 3) {
+                    if (e.getClickedBlock().getType().toString().contains("BED")) {
+                        gameConfig.teams.get(gameConfig.teams.size()-1).setBedlocation(e.getClickedBlock().getLocation());
+                        player.sendMessage(ADDED_BED_MESSAGE
+                                .append(Component.text(gameConfig.teams.get(gameConfig.teams.size() - 1).getTeamColor() + " "))
                                 .append(ADDED_BED_MESSAGE1));
-                        p.sendMessage(ADD_TEAM_MESSAGE);
+                        player.sendMessage(ADD_TEAM_MESSAGE);
+                        player.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 4));
                     }
                 }
             }
@@ -150,11 +162,15 @@ public class GameConfig {
 
     public GameConfig() {
         gameConfigs.add(this);
+
+        teams = new ArrayList<>();
+        shopLocations = new ArrayList<>();
+        spawners = new ArrayList<>();
     }
 
     /**
      * saves the GameConfig into the plugins Config file
-     * @return
+     * @return if save was successful
      */
     public static boolean saveGameConfig() {
         //TODO save to Config File
@@ -163,11 +179,11 @@ public class GameConfig {
 
     /**
      * loads GameConfig from the plugin's configuration file
-     * @return
+     * @return the configs number, -1 if an error occurred
      */
-    public static boolean loadGameConfig() {
+    public static int loadGameConfig() {
         //TODO load from Config File
-        return true;
+        return 0;
     }
 
     /**

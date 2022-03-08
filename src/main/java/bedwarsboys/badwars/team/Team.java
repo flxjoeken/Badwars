@@ -21,7 +21,7 @@ public class Team {
     ArrayList<Player> players;
     String teamColor;
     Location spawnPoint;
-    Block bed;
+    Location bedlocation;
 
     /**
      * teamColor must be a color of the Minecraft wools
@@ -73,12 +73,12 @@ public class Team {
         this.spawnPoint = spawnPoint;
     }
 
-    public Block getBed() {
-        return bed;
+    public Location getBedlocation() {
+        return bedlocation;
     }
 
-    public void setBed(Block bed) {
-        this.bed = bed;
+    public void setBedlocation(Location bedlocation) {
+        this.bedlocation = bedlocation;
     }
 
     public Material getColoredWoolMaterial() {
