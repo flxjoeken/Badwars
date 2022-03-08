@@ -86,8 +86,6 @@ public class GameConfig {
         //reacts to chat inputs from Player while configuration
         @EventHandler
         public void gameConfigChatEvent(AsyncChatEvent e) {
-            e.getPlayer().sendMessage("event started in mode: " + e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt());
-
             if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
                 Player p = e.getPlayer();
                 GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
@@ -105,7 +103,6 @@ public class GameConfig {
                     }
                     case 1 -> {
                         if (e.message() instanceof TextComponent) {
-                            e.getPlayer().sendMessage("actual 1");
                             String messagestr = ((TextComponent) e.message()).content();
                             //TODO test if message is a BedColor
 
@@ -115,11 +112,13 @@ public class GameConfig {
                         }
                     }
                     case 2 -> {
-                        Team lastTeam = gameConfig.teams.get(gameConfig.teams.size() - 1);
-                        lastTeam.setSpawnPoint(p.getLocation());
-                        p.sendMessage(ADDED_SPAWN_MESSAGE.append(Component.text(lastTeam.getTeamColor())).append(ADDED_SPAWN_MESSAGE1));
-                        p.sendMessage(ADD_BED_MESSAGE);
-                        p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 3));
+                        if (e.message() instanceof TextComponent && ((TextComponent) e.message()).content().contains("spawn")) {
+                            Team lastTeam = gameConfig.teams.get(gameConfig.teams.size() - 1);
+                            lastTeam.setSpawnPoint(p.getLocation());
+                            p.sendMessage(ADDED_SPAWN_MESSAGE.append(Component.text(lastTeam.getTeamColor())).append(ADDED_SPAWN_MESSAGE1));
+                            p.sendMessage(ADD_BED_MESSAGE);
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 3));
+                        }
                     }
                     case 4 -> {
                         if (e.message() instanceof TextComponent) {
