@@ -23,12 +23,9 @@ import java.util.ArrayList;
  */
 public class GameConfig {
 
-    protected static ArrayList<GameConfig> gameConfigs = new ArrayList<>();
-
     //FixedMetadata Keys
     static final String CONFIGURES_GAME = "inGameConfig";
     static final String GAME_CONFIG_MODE =  "configState";
-
     //configure Teams Chat Text.
     static final TextComponent BEGIN_MESSAGE = Component
             .text("Du möchtest ein Bedwars Spiel konfigurieren. Das du kannst jederzeit mit")
@@ -62,12 +59,20 @@ public class GameConfig {
     static final TextComponent FINISHED_CONFIG = Component.text("Du hast das Spiel erfolgreich konfiguriert")
             .append(Component.newline())
             .append(Component.text("goodbye!"));
+    protected static ArrayList<GameConfig> gameConfigs = new ArrayList<>();
 
     //TODO configure Spawners chat text + logic
-
     ArrayList<Team> teams;
     ArrayList<Spawner> spawners;
     ArrayList<Location> shopLocations;
+
+    public GameConfig() {
+        gameConfigs.add(this);
+
+        teams = new ArrayList<>();
+        shopLocations = new ArrayList<>();
+        spawners = new ArrayList<>();
+    }
 
     /**
      * Creates a new GameConfig and lets a Player configure it with help of the Chat.
@@ -80,6 +85,45 @@ public class GameConfig {
         p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
 
         p.sendMessage(BEGIN_MESSAGE);
+    }
+
+    /**
+     * saves the GameConfig into the plugins Config file
+     * @return if save was successful
+     */
+    public static boolean saveGameConfig() {
+        //TODO save to Config File
+        return true;
+    }
+
+    /**
+     * loads GameConfig from the plugin's configuration file
+     * @return the configs number, -1 if an error occurred
+     */
+    public static int loadGameConfig() {
+        //TODO load from Config File
+        return 0;
+    }
+
+    /**
+     * Soll in Zukunft eine funktionierende test GameConfig zurückgeben.
+     * @return GameConfig for test purposes
+     */
+    public static GameConfig getDemoConfig() {
+        //TODO complete Demo Config
+        GameConfig gameConfig = new GameConfig();
+        Team team1 = new Team("RED", Bukkit.getWorlds().get(0).getSpawnLocation());
+        Team team2 = new Team("GREEN", Bukkit.getWorlds().get(0).getSpawnLocation());
+
+        ArrayList<Team> teams = new ArrayList<>();
+
+        teams.add(team1);
+        teams.add(team2);
+        gameConfig.teams = teams;
+
+
+
+        return gameConfig;
     }
 
     public static class GameConfigEvents implements Listener {
@@ -157,52 +201,5 @@ public class GameConfig {
                 }
             }
         }
-    }
-
-    public GameConfig() {
-        gameConfigs.add(this);
-
-        teams = new ArrayList<>();
-        shopLocations = new ArrayList<>();
-        spawners = new ArrayList<>();
-    }
-
-    /**
-     * saves the GameConfig into the plugins Config file
-     * @return if save was successful
-     */
-    public static boolean saveGameConfig() {
-        //TODO save to Config File
-        return true;
-    }
-
-    /**
-     * loads GameConfig from the plugin's configuration file
-     * @return the configs number, -1 if an error occurred
-     */
-    public static int loadGameConfig() {
-        //TODO load from Config File
-        return 0;
-    }
-
-    /**
-     * Soll in Zukunft eine funktionierende test GameConfig zurückgeben.
-     * @return GameConfig for test purposes
-     */
-    public static GameConfig getDemoConfig() {
-        //TODO complete Demo Config
-        GameConfig gameConfig = new GameConfig();
-        Team team1 = new Team("RED", Bukkit.getWorlds().get(0).getSpawnLocation());
-        Team team2 = new Team("GREEN", Bukkit.getWorlds().get(0).getSpawnLocation());
-
-        ArrayList<Team> teams = new ArrayList<>();
-
-        teams.add(team1);
-        teams.add(team2);
-        gameConfig.teams = teams;
-
-
-
-        return gameConfig;
     }
 }
