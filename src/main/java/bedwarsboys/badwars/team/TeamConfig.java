@@ -144,6 +144,7 @@ public class TeamConfig {
     }
 
     //TODO: Change name of registered team to GameConfig id + Team name
+    //TODO: Maybe move to GameConfig
     void initScoreboardTeams(){
         for (Team.TEAMS bt : Team.TEAMS.values()){
             org.bukkit.scoreboard.Team t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(bt.name.toUpperCase());
