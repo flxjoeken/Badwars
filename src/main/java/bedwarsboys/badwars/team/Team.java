@@ -63,8 +63,8 @@ public class Team {
         this.players = players;
     }
 
-    public TEAMS getTeamColor() {
-        return team;
+    public NamedTextColor getTeamColor() {
+        return team.textColor;
     }
 
     public void setTeamColor(TEAMS teamId) {
@@ -97,10 +97,10 @@ public class Team {
         BLACK(6, "black", Material.BLACK_WOOL, NamedTextColor.BLACK),
         WHITE(7, "white", Material.WHITE_WOOL, NamedTextColor.WHITE);
 
-        final int id;
-        final String name;
-        final Material material;
-        final NamedTextColor textColor;
+        public final int id;
+        public final String name;
+        public final Material material;
+        public final NamedTextColor textColor;
 
         TEAMS(int id, String name, Material material, NamedTextColor textColor) {
             this.id = id;
