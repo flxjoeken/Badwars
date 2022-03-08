@@ -1,6 +1,5 @@
 package bedwarsboys.badwars.team;
 
-import bedwarsboys.badwars.Badwars;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
@@ -9,28 +8,35 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class TeamConfiguration {
+/**
+ * Every GameConfig will have one of these.
+ * The TeamConfiguration saves which teams are enabled for the GameConfig, and how many of them.
+ */
+public class TeamConfig {
+
+    //TODO: Simplify Team selection and connect each team with a Team instance.
+
+    public int teamCount = 2;
+    public boolean[] activeTeams = {true, true, true, true, true, true, true, true};
+    ArrayList<Team> teams;
 
     public Inventory menu = Bukkit.createInventory(null, 18, Component.text("Team Configurations"));
     public InventoryMenu invMenu;
 
-    public TeamConfiguration(){
-
+    public TeamConfig() {
+        setupTeamConfigMenu();
+        initScoreboardTeams();
     }
 
-    public void setupTeamConfigMenu() {
+    void setupTeamConfigMenu() {
         //Plus Banner
         ItemStack plus = new ItemStack(Material.GREEN_BANNER, 1);
         ItemMeta plusMeta = plus.getItemMeta();
@@ -51,14 +57,14 @@ public class TeamConfiguration {
         menu.setItem(0, new ItemStack(Material.RED_WOOL));
         menu.setItem(1, new ItemStack(Material.BLUE_WOOL));
         Action aPlus = p -> {
-            if (TeamManager.teamCount < 8) {
-                TeamManager.teamCount++;
+            if (teamCount < 8) {
+                teamCount++;
                 updateTeams();
             }
         };
         Action aMinus = p -> {
-            if (TeamManager.teamCount > 2 && activeTeamCount() > 2) {
-                TeamManager.teamCount--;
+            if (teamCount > 2 && activeTeamCount() > 2) {
+                teamCount--;
                 updateTeams();
             }
         };
@@ -70,7 +76,7 @@ public class TeamConfiguration {
                 continue;
             }
             if (slot > 8 && slot <= 16) {
-                actionList.add(i, p -> toggleTeamActive(p, slot));
+                actionList.add(i, p -> toggleTeamActive(slot));
                 continue;
             }
             if (slot == 8) {
@@ -85,8 +91,8 @@ public class TeamConfiguration {
 
     private int activeTeamCount() {
         int c = 0;
-        for (int i = 0; i < TeamManager.teamCount; i++) {
-            c += TeamManager.activeTeams[i] ? 1 : 0;
+        for (int i = 0; i < teamCount; i++) {
+            c += activeTeams[i] ? 1 : 0;
         }
         return c;
     }
@@ -96,25 +102,25 @@ public class TeamConfiguration {
             p.sendMessage("You clicked " + slot + "!");
     }
 
-    private void toggleTeamActive(Player p, int slot) {
+    private void toggleTeamActive(int slot) {
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
-                TeamManager.activeTeams[slot - 9] = false;
+                activeTeams[slot - 9] = false;
             }
         } else {
             menu.setItem(slot, null);
-            TeamManager.activeTeams[slot - 9] = true;
+            activeTeams[slot - 9] = true;
         }
         updateTeams();
     }
 
     private void updateTeams() {
-        for (TeamManager.BadwarsTeam bt : TeamManager.teams) {
+        for (Team.TEAMS bt : Team.TEAMS.values()) {
             menu.setItem(bt.id, new ItemStack(bt.material));
         }
         for (int i = 0; i < 8; i++) {
-            if (i >= TeamManager.teamCount || menu.getContents()[i + 9] != null) {
+            if (i >= teamCount || menu.getContents()[i + 9] != null) {
                 menu.setItem(i, null);
             }
 
@@ -131,6 +137,21 @@ public class TeamConfiguration {
         meta.displayName(banner.getItemMeta().displayName());
         meta.setPatterns(patterns);
         banner.setItemMeta(meta);
+    }
+
+    public void showMenuToPlayer(Player p) {
+        p.openInventory(menu);
+    }
+
+    //TODO: Change name of registered team to GameConfig id + Team name
+    void initScoreboardTeams(){
+        for (Team.TEAMS bt : Team.TEAMS.values()){
+            org.bukkit.scoreboard.Team t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(bt.name.toUpperCase());
+            t.color(bt.textColor);
+            t.displayName(Component.text(bt.name.toUpperCase()));
+            t.setAllowFriendlyFire(false);
+            t.setCanSeeFriendlyInvisibles(true);
+        }
     }
 
 }
