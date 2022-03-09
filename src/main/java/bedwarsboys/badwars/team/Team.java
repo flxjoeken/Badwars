@@ -1,32 +1,25 @@
 package bedwarsboys.badwars.team;
 
-import bedwarsboys.badwars.Badwars;
-import bedwarsboys.badwars.invmenu.Action;
-import bedwarsboys.badwars.invmenu.InventoryMenu;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 
 //should be implemented in own class?
 public class Team {
 
+
+    int maxPlayers;
     ArrayList<Player> players;
     /**
      * Every in-game team has a hardcoded team that decides it's name, id and color
      */
     TEAMS team;
     Location spawnPoint;
-    Block bed;
+    Block bedLocation;
 
     /**
      * Create a new Team
@@ -39,20 +32,16 @@ public class Team {
     }
 
     /**
-     * Lets Player p select a team from a Collection of Teams
-     * @param p The player to show the menu to
-     * @param teams The collection of teams to choose from
+     * Create a new Team
+     *
+     * @param team the ID of the team
+     * @param spawnPoint the spawn location of the team
+     * @param maxPlayers the maximum amount of players in the team
      */
-    //TODO
-    public static void selectTeamMenu(Player p, Collection<TEAMS> teams) {
-        Inventory iv = Bukkit.createInventory(null, 9, Component.text("Select Team: "));
-        InventoryMenu im;
-        for (TEAMS t : teams) {
-            iv.addItem(new ItemStack(t.material));
-        }
-        Action[] actions = {};
-        im = new InventoryMenu(iv, actions);
-        im.showToPlayer(p);
+    public Team(TEAMS team, Location spawnPoint, int maxPlayers) {
+        this.spawnPoint = spawnPoint;
+        this.team = team;
+        this.maxPlayers = maxPlayers;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -79,12 +68,20 @@ public class Team {
         this.spawnPoint = spawnPoint;
     }
 
-    public Block getBed() {
-        return bed;
+    public Block getBedLocation() {
+        return bedLocation;
     }
 
-    public void setBed(Block bed) {
-        this.bed = bed;
+    public void setBedLocation(Block bedLocation) {
+        this.bedLocation = bedLocation;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
 
     public enum TEAMS {
@@ -108,6 +105,16 @@ public class Team {
             this.material = material;
             this.textColor = textColor;
         }
+
+        public static TEAMS byID(int id){
+            for (TEAMS t : TEAMS.values()){
+                if (t.id == id){
+                    return t;
+                }
+            }
+            return null;
+        }
+
     }
 
 }
