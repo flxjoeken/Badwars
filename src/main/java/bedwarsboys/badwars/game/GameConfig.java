@@ -10,22 +10,25 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameConfig implements Listener {
 
-    protected static ArrayList<GameConfig> gameConfigs = new ArrayList<>();
+    protected static HashMap<Integer, GameConfig> gameConfigs = new HashMap<>();
 
-    static final String CONFIGURES_GAME = "inGameConfig";
-    static final String GAME_CONFIG_MODE = "configState";
-    static final String CONFIGURING_TEAM = "configuringTeam";
+    public static final String CONFIGURES_GAME = "inGameConfig";
+    /**
+     * 1 = setting up teams
+     * 2 = setting up team spawns
+     */
+    public static final String GAME_CONFIG_MODE = "configState";
+    public static final String CONFIGURING_TEAM = "configuringTeam";
 
     //configure Teams procedure Chat Text.
     static final TextComponent BEGIN_MESSAGE_1 = Component
@@ -43,13 +46,14 @@ public class GameConfig implements Listener {
     static final TextComponent ADDED_SPAWN_MESSAGE = Component.text("Der Wiedereinstiegspunkt von " +
             "Team %0 wurde erfolgreich erfasst");
     static final TextComponent ADD_BED_MESSAGE = Component.text("Klicke nun auf das Bett des Teams");
-    static final String ADDED_BED_MESSAGE = "Das Bett von Team %0 wurde erfolgreich erfasst.";
+    public static final String ADDED_BED_MESSAGE = "Das Bett von Team %0 wurde erfolgreich erfasst.";
     static final TextComponent TEAM_NOT_EXIST = Component.text("Dieses Team existiert nicht.");
     static final String NOT_CONFIGURING_TEAM = "You are not configuring a team.";
 
     //TODO configure Spawners chat text + logic
 
-    TeamConfig teamConfig;
+    String worldName;
+    private TeamConfig teamConfig;
     ArrayList<Spawner> spawners;
     // The GameConfig does not have beds, every team has beds.
     //ArrayList<Block> beds;
@@ -61,29 +65,38 @@ public class GameConfig implements Listener {
      * @param p Player
      */
     public static void createGameConfig(Player p) {
-        gameConfigs.add(new GameConfig());
+        GameConfig gc = new GameConfig();
+        int i = 0;
+        for (int id : gameConfigs.keySet().stream().sorted().toList()) {
+            if (i == id) i++;
+        }
+        gameConfigs.put(gameConfigs.size(), gc);
+        gc.worldName = p.getWorld().getName();
 
         p.setMetadata(CONFIGURES_GAME, new FixedMetadataValue(Badwars.PLUGIN, gameConfigs.size()));
         p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 0));
 
         p.sendMessage(BEGIN_MESSAGE_1);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, new Runnable() {
-            @Override
-            public void run() {
-                p.sendMessage(BEGIN_MESSAGE_2);
-            }
-        }, 40);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, new Runnable() {
-            @Override
-            public void run() {
-                //get the config the Player is configuring
-                GameConfig g = getRunningConfig(p);
-                if (g != null) {
-                    //TODO: Open Inventory again if the Player closes it.
-                    g.teamConfig.showMenuToPlayer(p);
-                }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, () -> p.sendMessage(BEGIN_MESSAGE_2), 40);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, () -> {
+            //get the config the Player is configuring
+            GameConfig g = getRunningConfig(p);
+            if (g != null) {
+                //TODO: Open Inventory again if the Player closes it.
+                g.teamConfig.showMenuToPlayer(p);
             }
         }, 80);
+    }
+
+    public static GameConfig getConfig(int id) {
+        if (gameConfigs.size() > id) {
+            return gameConfigs.get(id);
+        }
+        return null;
+    }
+
+    public TeamConfig getTeamConfig() {
+        return teamConfig;
     }
 
     @EventHandler
@@ -96,30 +109,13 @@ public class GameConfig implements Listener {
         }
     }
 
-    @EventHandler
-    private static void gameConfigClickEvent(PlayerInteractEvent e) {
-        if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
-            Player p = e.getPlayer();
-            GameConfig gameConfig = getRunningConfig(p);
-            if (gameConfig == null) return;
-
-            if (getRunningConfigMode(p) == 2) {
-                //gameConfig.beds.add(e.getClickedBlock());
-                Team.TEAMS t = getRunningConfigTeam(p);
-                if (t != null) {
-                    p.sendMessage(ADDED_BED_MESSAGE);
-                }
-            }
-        }
-    }
-
     /**
      * To get the GameConfig instance a Player is configuring
      *
      * @param p The Player to check for
      * @return Returns the GameConfig, or null if the Player is not configuring one.
      */
-    static GameConfig getRunningConfig(Player p) {
+    public static GameConfig getRunningConfig(Player p) {
         if (!p.hasMetadata(CONFIGURES_GAME)) {
             return null;
         }
@@ -130,14 +126,14 @@ public class GameConfig implements Listener {
         return GameConfig.gameConfigs.get(id);
     }
 
-    static int getRunningConfigMode(Player p) {
+    public static int getRunningConfigMode(Player p) {
         if (!p.hasMetadata(CONFIGURES_GAME) || !p.hasMetadata(GAME_CONFIG_MODE)) {
             return -1;
         }
         return p.getMetadata(GAME_CONFIG_MODE).get(0).asInt();
     }
 
-    static Team.TEAMS getRunningConfigTeam(Player p) {
+    public static Team.TEAMS getRunningConfigTeam(Player p) {
         if (!p.hasMetadata(CONFIGURES_GAME) || !p.hasMetadata(CONFIGURING_TEAM)) {
             return null;
         }
