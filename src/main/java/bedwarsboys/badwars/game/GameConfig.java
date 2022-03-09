@@ -6,6 +6,7 @@ import bedwarsboys.badwars.team.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import javax.naming.Name;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +29,7 @@ public class GameConfig {
     //FixedMetadata Keys
     static final String CONFIGURES_GAME = "inGameConfig";
     static final String GAME_CONFIG_MODE = "configState";
-    //configure Teams Chat Text.
+
     static final TextComponent BEGIN_MESSAGE = Component
             .text("Du möchtest ein Bedwars Spiel konfigurieren. Das du kannst jederzeit mit")
             .append(Component.text(" exit ")
@@ -62,11 +64,26 @@ public class GameConfig {
     static final TextComponent ADD_TEAM_MESSAGE = Component.text("Möchtest du ein weiteres Team hinzufügen dann tippe ")
             .append(Component.text("weiter ").color(NamedTextColor.RED))
             .append(Component.text("sonst tippe "))
+            .append(Component.text("fertig ").color(NamedTextColor.RED))
+            .append(Component.text("."));
+    static final TextComponent ADD_SPAWNER_MESSAGE = Component.text("Nun kannst du die Spawner des Spiels konfigurieren. Stelle dich dazu auf den Ort an dem die Ressourcen erscheinen sollen und tippe")
+            .append(Component.text("gold").color(NamedTextColor.RED))
+            .append(Component.text(", "))
+            .append(Component.text("eisen").color(NamedTextColor.RED))
+            .append(Component.text(" oder "))
+            .append(Component.text("bronze").color(NamedTextColor.RED))
+            .append(Component.text(" um den Spawner zu erstellen. "));
+    static final TextComponent ADDED_SPAWNER_MESSAGE = Component.text("Ein ");
+    static final TextComponent ADDED_SPAWNER_MESSAGE1 = Component.text(" wurde erfolgreich erstellt. ")
+            .append(Component.text("Möchtest du einen weiteren Spawner erstellen, dann tippe "))
+            .append(Component.text("weiter").color(NamedTextColor.RED))
+            .append(Component.text(", sonst tippe "))
             .append(Component.text("fertig").color(NamedTextColor.RED))
             .append(Component.text(". "));
     static final TextComponent FINISHED_CONFIG = Component.text("Du hast das Spiel erfolgreich konfiguriert")
             .append(Component.newline())
             .append(Component.text("goodbye!"));
+
     protected static ArrayList<GameConfig> gameConfigs = new ArrayList<>();
 
     //TODO configure Spawners chat text + logic
@@ -144,22 +161,24 @@ public class GameConfig {
                 Player p = e.getPlayer();
                 GameConfig gameConfig = GameConfig.gameConfigs.get(e.getPlayer().getMetadata(CONFIGURES_GAME).get(0).asInt()); //gets the gameConfig to change
 
-                // there are several things to configure choose from them by changing the GAME_CONFIG_MODE metadata:
+                // there are several things to configure. Choose from them by changing the GAME_CONFIG_MODE metadata:
                 //  0: Start configuration message
                 //  1: add new team by color
                 //  2: add Spawnpoint to team
+                //  3: choose Bed Location
+                //  4: ask for additional Team
+                //  5:
                 switch (e.getPlayer().getMetadata(GAME_CONFIG_MODE).get(0).asInt()) {
                     case 0 -> {
                         if (e.message() instanceof TextComponent && ((TextComponent) e.message()).content().contains("weiter")) {
-                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
                             p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
                         }
                     }
                     case 1 -> {
                         if (e.message() instanceof TextComponent) {
                             String messagestr = ((TextComponent) e.message()).content();
                             //TODO test if message is a BedColor
-
                             gameConfig.teams.add(new Team(messagestr, null));
                             p.sendMessage(ADD_SPAWN_MESSAGE);
                             p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 2)); // jump to next config Mode
@@ -177,15 +196,20 @@ public class GameConfig {
                     case 4 -> {
                         if (e.message() instanceof TextComponent) {
                             if (((TextComponent) e.message()).content().contains("fertig")) {
-                                e.getPlayer().removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
-                                e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
-                                p.sendMessage(FINISHED_CONFIG);
-
+                                //TODO
                             } else if (((TextComponent) e.message()).content().contains("weiter")) {
-                                p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
                                 p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                                p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
                             }
                         }
+                    }
+                    case 5 -> {
+
+                    }
+                    case 10 -> {
+                        e.getPlayer().removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
+                        e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
+                        p.sendMessage(FINISHED_CONFIG);
                     }
                 }
             }
