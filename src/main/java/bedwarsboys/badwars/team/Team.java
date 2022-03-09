@@ -1,9 +1,6 @@
 package bedwarsboys.badwars.team;
 
-import bedwarsboys.badwars.invmenu.Action;
-import bedwarsboys.badwars.invmenu.InventoryMenu;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,35 +15,37 @@ import java.util.Collection;
 //should be implemented in own class?
 public class Team {
 
+
+    int maxPlayers;
     ArrayList<Player> players;
-    String teamColor;
+    /**
+     * Every in-game team has a hardcoded team that decides it's name, id and color
+     */
+    TEAMS team;
     Location spawnPoint;
     Location bedlocation;
 
     /**
-     * teamColor must be a color of the Minecraft wools
-     * @param teamColor the Color of the team
+     * Create a new Team
+     * @param team the ID of the team
      * @param spawnPoint spawnLocation
      */
-    public Team(String teamColor, Location spawnPoint) {
+    public Team(TEAMS team, Location spawnPoint) {
         this.spawnPoint = spawnPoint;
-        this.teamColor = teamColor;
+        this.team = team;
     }
 
     /**
-     * lets a Player p select a team from a Collection of Teams
-     * @param p Player who'll choose
-     * @param teams A collection of teams to choose from
+     * Create a new Team
+     *
+     * @param team the ID of the team
+     * @param spawnPoint the spawn location of the team
+     * @param maxPlayers the maximum amount of players in the team
      */
-    public static void selectTeamMenu(Player p, Collection<Team> teams) {
-        Inventory iv = Bukkit.createInventory(null, 9, Component.text("select Team: "));
-        InventoryMenu im;
-        for (Team t : teams) {
-            iv.addItem(new ItemStack(t.getColoredWoolMaterial()));
-        }
-        Action[] actions = {};
-        im = new InventoryMenu(iv, actions);
-        im.showToPlayer(p);
+    public Team(TEAMS team, Location spawnPoint, int maxPlayers) {
+        this.spawnPoint = spawnPoint;
+        this.team = team;
+        this.maxPlayers = maxPlayers;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -57,12 +56,12 @@ public class Team {
         this.players = players;
     }
 
-    public String getTeamColor() {
-        return teamColor;
+    public NamedTextColor getTeamColor() {
+        return team.textColor;
     }
 
-    public void setTeamColor(String teamColor) {
-        this.teamColor = teamColor;
+    public void setTeamColor(TEAMS teamId) {
+        this.team = teamId;
     }
 
     public Location getSpawnPoint() {
@@ -80,8 +79,45 @@ public class Team {
     public void setBedlocation(Location bedlocation) {
         this.bedlocation = bedlocation;
     }
-
-    public Material getColoredWoolMaterial() {
-        return Material.getMaterial(teamColor+"_WOOL");
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public enum TEAMS {
+        RED(0, "red", Material.RED_WOOL, NamedTextColor.RED),
+        BLUE(1, "blue", Material.BLUE_WOOL, NamedTextColor.BLUE),
+        GREEN(2, "green", Material.GREEN_WOOL, NamedTextColor.GREEN),
+        YELLOW(3, "yellow", Material.YELLOW_WOOL, NamedTextColor.YELLOW),
+        PINK(4, "pink", Material.PINK_WOOL, NamedTextColor.LIGHT_PURPLE),
+        PURPLE(5, "purple", Material.PURPLE_WOOL, NamedTextColor.DARK_PURPLE),
+        BLACK(6, "black", Material.BLACK_WOOL, NamedTextColor.BLACK),
+        WHITE(7, "white", Material.WHITE_WOOL, NamedTextColor.WHITE);
+
+        public final int id;
+        public final String name;
+        public final Material material;
+        public final NamedTextColor textColor;
+
+        TEAMS(int id, String name, Material material, NamedTextColor textColor) {
+            this.id = id;
+            this.name = name;
+            this.material = material;
+            this.textColor = textColor;
+        }
+
+        public static TEAMS byID(int id){
+            for (TEAMS t : TEAMS.values()){
+                if (t.id == id){
+                    return t;
+                }
+            }
+            return null;
+        }
+
+    }
+
 }

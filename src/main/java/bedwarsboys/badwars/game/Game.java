@@ -21,7 +21,8 @@ public class Game {
 
     public void startGame() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            Team.selectTeamMenu(p, gameConfig.teams);
+            if (p.getWorld().getName().equals(gameConfig.worldName))
+            gameConfig.getTeamConfig().showSelectTeamMenu(p);
         }
     }
 

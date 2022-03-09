@@ -27,8 +27,8 @@ public final class Badwars extends JavaPlugin {
     CommandExecutor saveArenaCommand = new SaveArenaCommand();
     CommandExecutor pasteArenaCommand = new PasteArenaCommand();
     CommandExecutor summonTestShopCommand = new SummonTestShopCommand();
-    CommandExecutor configureTeamsCommand = new TeamConfiguration.ConfigureTeamsCommand();
-    CommandExecutor setTeamSpawnCommand = new TeamConfiguration.SetTeamSpawnCommand();
+    CommandExecutor configureTeamsCommand = new ConfigureTeamsCommand();
+    CommandExecutor setTeamSpawnCommand = new SetTeamSpawnCommand();
     CommandExecutor setLobbyCommand = new SetLobbyCommand();
     CommandExecutor bedwars_DebugCommand = new Bedwars_DebugCommand();
 
@@ -38,7 +38,8 @@ public final class Badwars extends JavaPlugin {
         PLUGIN = this;
         CONFIG = this.getConfig();
 
-        TeamConfiguration.setupTeamConfigMenu();
+        //TODO: Maybe! We need to somewhere setup all the team menus for the GameConfig instances
+        //TeamConfiguration.setupTeamConfigMenu();
         lobbyManager = new LobbyManager();
 
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
