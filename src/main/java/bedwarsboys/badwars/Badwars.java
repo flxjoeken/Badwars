@@ -4,13 +4,11 @@ import bedwarsboys.badwars.commands.*;
 import bedwarsboys.badwars.game.GameConfig;
 import bedwarsboys.badwars.invmenu.InventoryMenuActionEvent;
 import bedwarsboys.badwars.invmenu.SummonTestShopCommand;
-import bedwarsboys.badwars.team.TeamConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
