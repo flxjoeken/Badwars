@@ -1,42 +1,52 @@
 package bedwarsboys.badwars.team;
 
+import bedwarsboys.badwars.game.GameConfig;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+
+import static bedwarsboys.badwars.game.GameConfig.*;
 
 /**
  * Every GameConfig will have one of these.
  * The TeamConfiguration saves which teams are enabled for the GameConfig, and how many of them.
  */
-public class TeamConfig {
+public class TeamConfig implements Listener {
 
     //TODO: Simplify Team selection and connect each team with a Team instance.
 
+    /**
+     * number of teams that are active
+     */
     public int teamCount = 2;
-    public boolean[] activeTeams = {true, true, true, true, true, true, true, true};
-    ArrayList<Team> teams;
+    /**
+     * which teams are active
+     */
+    public boolean[] activeTeams = new boolean[Team.TEAMS.values().length];
+    public ArrayList<Team> teams;
 
-    public Inventory menu = Bukkit.createInventory(null, 18, Component.text("Team Configurations"));
+    Inventory menu = Bukkit.createInventory(null, 9 * 4, Component.text("Team Configurations"));
     public InventoryMenu invMenu;
 
     public TeamConfig() {
+        activeTeams[0] = true;
+        activeTeams[1] = true;
         setupTeamConfigMenu();
         initScoreboardTeams();
     }
 
     void setupTeamConfigMenu() {
+        /*
         //Plus Banner
         ItemStack plus = new ItemStack(Material.GREEN_BANNER, 1);
         ItemMeta plusMeta = plus.getItemMeta();
@@ -53,9 +63,11 @@ public class TeamConfig {
 
         menu.setItem(8, plus);
         menu.setItem(8 + 9, minus);
+        */
 
-        menu.setItem(0, new ItemStack(Material.RED_WOOL));
-        menu.setItem(1, new ItemStack(Material.BLUE_WOOL));
+        menu.setItem(0, new ItemStack(Team.TEAMS.RED.material));
+        menu.setItem(1, new ItemStack(Team.TEAMS.BLUE.material));
+        /*
         Action aPlus = p -> {
             if (teamCount < 8) {
                 teamCount++;
@@ -68,23 +80,36 @@ public class TeamConfig {
                 updateTeams();
             }
         };
+        */
         ArrayList<Action> actionList = new ArrayList<>();
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 9 * 4; i++) {
             int slot = i;
-            if (slot <= 7) {
-                actionList.add(i, p -> doTeamAction(p, slot));
+            // first row
+            if (slot < 8) {
+                actionList.add(i, p -> doTeamAction(p, slot, slot));
                 continue;
             }
-            if (slot > 8 && slot <= 16) {
-                actionList.add(i, p -> toggleTeamActive(slot));
+            //second row
+            if (slot >= 9 && slot < 9 + 8) {
+                actionList.add(i, p -> toggleTeamActive(slot, slot - 9));
                 continue;
             }
+            //third row
+            if (slot >= 9 * 2 && slot < 9 * 2 + 8) {
+                actionList.add(i, p -> doTeamAction(p, slot, slot - 18));
+                continue;
+            }
+            if (slot >= 9 * 3 && slot < 9 * 3 + 8) {
+                actionList.add(i, p -> toggleTeamActive(slot, slot - 27));
+            }
+            /*
             if (slot == 8) {
                 actionList.add(slot, aPlus);
                 continue;
             }
-            // only other case is slot==17
+             only other case is slot==17
             actionList.add(slot, aMinus);
+            */
         }
         invMenu = new InventoryMenu(menu, actionList.toArray(new Action[0]));
     }
@@ -97,36 +122,61 @@ public class TeamConfig {
         return c;
     }
 
-    private void doTeamAction(Player p, int slot) {
-        if (menu.getContents()[slot] != null)
-            p.sendMessage("You clicked " + slot + "!");
+    private void doTeamAction(Player p, int id, int slot) {
+        if (menu.getContents()[slot] != null && id < Team.TEAMS.values().length)
+            p.sendMessage("You clicked " + Team.TEAMS.values()[id].name + "!");
     }
 
-    private void toggleTeamActive(int slot) {
+    private void toggleTeamActive(int id, int slot) {
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
-                activeTeams[slot - 9] = false;
+                activeTeams[id] = false;
             }
         } else {
             menu.setItem(slot, null);
-            activeTeams[slot - 9] = true;
+            activeTeams[id] = true;
         }
         updateTeams();
     }
 
     private void updateTeams() {
         for (Team.TEAMS bt : Team.TEAMS.values()) {
-            menu.setItem(bt.id, new ItemStack(bt.material));
-        }
-        for (int i = 0; i < 8; i++) {
-            if (i >= teamCount || menu.getContents()[i + 9] != null) {
-                menu.setItem(i, null);
+            if (activeTeams[bt.id]) {
+                if (bt.id < 8) {
+                    menu.setItem(bt.id, new ItemStack(bt.material));
+                } else {
+                    menu.setItem(bt.id + 18, new ItemStack(bt.material));
+                }
             }
-
         }
     }
 
+    /**
+     * Lets Player p select a team from the teams available
+     *
+     * @param p The player to show the menu to
+     */
+    //TODO
+    public void showSelectTeamMenu(Player p) {
+        Inventory iv = Bukkit.createInventory(null, 9 * 2, Component.text("Select Team: "));
+        int currentSlot = 0;
+        Action[] actions = new Action[activeTeams.length];
+        for (int i = 0; i < activeTeams.length; i++) {
+            Team.TEAMS t = Team.TEAMS.byID(i);
+            if (t != null) {
+                iv.setItem(currentSlot, new ItemStack(t.material));
+                actions[currentSlot] = x -> {
+                    joinTeam(x, t);
+                };
+                currentSlot++;
+            }
+        }
+        InventoryMenu im = new InventoryMenu(iv, actions);
+        im.showToPlayer(p);
+    }
+
+    /*
     private void bannerSetup(ItemStack banner, boolean isPlus) {
         ArrayList<Pattern> patterns = new ArrayList<>();
         if (isPlus) {
@@ -138,6 +188,12 @@ public class TeamConfig {
         meta.setPatterns(patterns);
         banner.setItemMeta(meta);
     }
+    */
+
+    public boolean joinTeam(Player p, Team.TEAMS team) {
+        //TODO
+        return false;
+    }
 
     public void showMenuToPlayer(Player p) {
         p.openInventory(menu);
@@ -145,13 +201,30 @@ public class TeamConfig {
 
     //TODO: Change name of registered team to GameConfig id + Team name
     //TODO: Maybe move to GameConfig
-    void initScoreboardTeams(){
-        for (Team.TEAMS bt : Team.TEAMS.values()){
+    void initScoreboardTeams() {
+        for (Team.TEAMS bt : Team.TEAMS.values()) {
             org.bukkit.scoreboard.Team t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(bt.name.toUpperCase());
             t.color(bt.textColor);
             t.displayName(Component.text(bt.name.toUpperCase()));
             t.setAllowFriendlyFire(false);
             t.setCanSeeFriendlyInvisibles(true);
+        }
+    }
+
+    @EventHandler
+    private static void gameConfigClickEvent(PlayerInteractEvent e) {
+        if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
+            Player p = e.getPlayer();
+            GameConfig gameConfig = getRunningConfig(p);
+            if (gameConfig == null) return;
+
+            if (getRunningConfigMode(p) == 2) {
+                //gameConfig.beds.add(e.getClickedBlock());
+                Team.TEAMS t = getRunningConfigTeam(p);
+                if (t != null) {
+                    p.sendMessage(ADDED_BED_MESSAGE);
+                }
+            }
         }
     }
 
