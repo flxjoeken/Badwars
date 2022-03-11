@@ -25,13 +25,4 @@ public class Game {
             gameConfig.getTeamConfig().showSelectTeamMenu(p);
         }
     }
-
-    public static class startGameCommand implements CommandExecutor {
-
-        @Override
-        public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-            GameConfig.letPlayerCreateNewConfig((Player) sender);
-            return true;
-        }
-    }
 }

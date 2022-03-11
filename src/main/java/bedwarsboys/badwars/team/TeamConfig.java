@@ -4,16 +4,26 @@ import bedwarsboys.badwars.game.GameConfig;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static bedwarsboys.badwars.game.GameConfig.*;
 
@@ -24,25 +34,23 @@ import static bedwarsboys.badwars.game.GameConfig.*;
 public class TeamConfig implements Listener {
 
     //TODO: Simplify Team selection and connect each team with a Team instance.
-
-    /**
-     * number of teams that are active
-     */
-    public int teamCount = 2;
     /**
      * which teams are active
      */
     public boolean[] activeTeams = new boolean[Team.TEAMS.values().length];
+
     public ArrayList<Team> teams;
 
     Inventory menu = Bukkit.createInventory(null, 9 * 4, Component.text("Team Configurations"));
     public InventoryMenu invMenu;
 
     public TeamConfig() {
+        //Arrays.fill(activeTeams, Boolean.TRUE);
         activeTeams[0] = true;
         activeTeams[1] = true;
         setupTeamConfigMenu();
-        initScoreboardTeams();
+        // initScoreboardTeams();
+        updateTeams();
     }
 
     void setupTeamConfigMenu() {
@@ -65,8 +73,31 @@ public class TeamConfig implements Listener {
         menu.setItem(8 + 9, minus);
         */
 
-        menu.setItem(0, new ItemStack(Team.TEAMS.RED.material));
-        menu.setItem(1, new ItemStack(Team.TEAMS.BLUE.material));
+        //menu.setItem(0, new ItemStack(Team.TEAMS.RED.material));
+        //menu.setItem(1, new ItemStack(Team.TEAMS.BLUE.material));
+        /*
+        for (int i = 0; i < 8; i++) {
+            Team.TEAMS t = Team.TEAMS.byID(i);
+            if (t == null) continue;
+            menu.setItem(i, new ItemStack(t.material));
+        }
+        for (int i = 2 * 9; i < 2 * 9 + 8; i++) {
+            Team.TEAMS t = Team.TEAMS.byID(i - 10);
+            if (t == null) continue;
+            menu.setItem(i, new ItemStack(t.material));
+        }
+        */
+
+        menu.setItem(8, createHelpBanner());
+
+        for (int i = 9 + 2; i < 9 + 8; i++) {
+            if (Team.TEAMS.byID(i - 9) == null) continue;
+            menu.setItem(i, new ItemStack(Material.BARRIER));
+        }
+        for (int i = 3 * 9; i < 3 * 9 + 8; i++) {
+            if (Team.TEAMS.byID(i - 19) == null) continue;
+            menu.setItem(i, new ItemStack(Material.BARRIER));
+        }
         /*
         Action aPlus = p -> {
             if (teamCount < 8) {
@@ -84,6 +115,9 @@ public class TeamConfig implements Listener {
         ArrayList<Action> actionList = new ArrayList<>();
         for (int i = 0; i < 9 * 4; i++) {
             int slot = i;
+            if (slot == 8 || slot == 8 + 9 || slot == 8 + 2 * 9 || slot == 8 + 3 * 9) {
+                actionList.add(i, null);
+            }
             // first row
             if (slot < 8) {
                 actionList.add(i, p -> doTeamAction(p, slot, slot));
@@ -91,16 +125,17 @@ public class TeamConfig implements Listener {
             }
             //second row
             if (slot >= 9 && slot < 9 + 8) {
-                actionList.add(i, p -> toggleTeamActive(slot, slot - 9));
+                actionList.add(i, p -> toggleTeamActive(slot - 9, slot));
                 continue;
             }
             //third row
             if (slot >= 9 * 2 && slot < 9 * 2 + 8) {
-                actionList.add(i, p -> doTeamAction(p, slot, slot - 18));
+                actionList.add(i, p -> doTeamAction(p, slot - 10, slot));
                 continue;
             }
+            //fourth row
             if (slot >= 9 * 3 && slot < 9 * 3 + 8) {
-                actionList.add(i, p -> toggleTeamActive(slot, slot - 27));
+                actionList.add(i, p -> toggleTeamActive(slot - 19, slot));
             }
             /*
             if (slot == 8) {
@@ -116,8 +151,8 @@ public class TeamConfig implements Listener {
 
     private int activeTeamCount() {
         int c = 0;
-        for (int i = 0; i < teamCount; i++) {
-            c += activeTeams[i] ? 1 : 0;
+        for (boolean b : activeTeams) {
+            c += b ? 1 : 0;
         }
         return c;
     }
@@ -128,10 +163,13 @@ public class TeamConfig implements Listener {
     }
 
     private void toggleTeamActive(int id, int slot) {
+        if (Team.TEAMS.byID(id) == null) return;
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
                 activeTeams[id] = false;
+            } else {
+                Bukkit.getServer().broadcast(Component.text("Not enough teams active"));
             }
         } else {
             menu.setItem(slot, null);
@@ -142,12 +180,14 @@ public class TeamConfig implements Listener {
 
     private void updateTeams() {
         for (Team.TEAMS bt : Team.TEAMS.values()) {
+            int offset = 0;
+            if (bt.id >= 8) {
+                offset = 18;
+            }
             if (activeTeams[bt.id]) {
-                if (bt.id < 8) {
-                    menu.setItem(bt.id, new ItemStack(bt.material));
-                } else {
-                    menu.setItem(bt.id + 18, new ItemStack(bt.material));
-                }
+                menu.setItem(bt.id + offset, new ItemStack(bt.material));
+            } else {
+                menu.setItem(bt.id + offset, new ItemStack(Material.valueOf(bt.material.name().replace("WOOL", "CARPET"))));
             }
         }
     }
@@ -176,6 +216,47 @@ public class TeamConfig implements Listener {
         im.showToPlayer(p);
     }
 
+    private ItemStack createHelpBanner() {
+        ItemStack s = new ItemStack(Material.WHITE_BANNER);
+        ArrayList<Pattern> patterns = new ArrayList<>();
+        patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_TOP));
+        patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_RIGHT));
+        patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_HORIZONTAL_MIRROR));
+        patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_MIDDLE));
+        patterns.add(new Pattern(DyeColor.BLACK, PatternType.SQUARE_BOTTOM_LEFT));
+        patterns.add(new Pattern(DyeColor.WHITE, PatternType.BORDER));
+        BannerMeta meta = ((BannerMeta) s.getItemMeta());
+        meta.setPatterns(patterns);
+        meta.displayName(Component.text("Hilfe").color(NamedTextColor.GOLD));
+        int lineSize = 50;
+        ArrayList<Component> lore = stringToLore("Um ein Team zu aktivieren, klicke auf das rote Kreuz " +
+                "unter der Farbe.", lineSize);
+        lore.addAll(stringToLore("Zum deaktivieren klicke den leeren Platz unter der Teamfarbe.", lineSize));
+        lore.addAll(stringToLore("Es müssen immer mindestens zwei Teams aktiv sein.", lineSize));
+        lore.addAll(stringToLore("Um den Spawnpunkt eines Teams und die Bett-Position einzustellen, " +
+                "klicke auf die entsprechende Farbe.", lineSize));
+        meta.lore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        s.setItemMeta(meta);
+        return s;
+    }
+
+    ArrayList<Component> stringToLore(String message, int charPerLine) {
+        ArrayList<Component> lore = new ArrayList<>();
+        String[] words = message.split(" ");
+        StringBuilder nextLine = new StringBuilder();
+        for (String word : words) {
+            if ((nextLine + word).length() > charPerLine) {
+                lore.add(Component.text(nextLine.toString()));
+                nextLine = new StringBuilder();
+            }
+            nextLine.append(word).append(" ");
+        }
+        lore.add(Component.text(nextLine.toString()));
+        return lore;
+    }
+
     /*
     private void bannerSetup(ItemStack banner, boolean isPlus) {
         ArrayList<Pattern> patterns = new ArrayList<>();
@@ -195,8 +276,8 @@ public class TeamConfig implements Listener {
         return false;
     }
 
-    public void showMenuToPlayer(Player p) {
-        p.openInventory(menu);
+    public void showTeamConfigMenu(Player p) {
+        invMenu.showToPlayer(p);
     }
 
     //TODO: Change name of registered team to GameConfig id + Team name

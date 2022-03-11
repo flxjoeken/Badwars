@@ -29,7 +29,7 @@ public class Bedwars_DebugCommand implements CommandExecutor {
             return true;
         }
         if (args[0].equalsIgnoreCase("testConfig")) {
-            GameConfig.letPlayerCreateNewConfig((Player) sender);
+            GameConfig.createGameConfig((Player) sender);
             return true;
         }
         return false;
