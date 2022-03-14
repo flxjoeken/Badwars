@@ -151,16 +151,6 @@ public class GameConfig {
         return teamConfig;
     }
 
-    @EventHandler
-    private static void gameConfigChatEvent(AsyncChatEvent e) {
-        if (e.getPlayer().hasMetadata(CONFIGURES_GAME)) {
-            Player p = e.getPlayer();
-            if (e.message().toString().equals("exit")) {
-                p.removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
-            }
-        }
-    }
-
     /**
      * To get the GameConfig instance a Player is configuring
      *
@@ -279,6 +269,9 @@ public class GameConfig {
                         e.getPlayer().removeMetadata(GAME_CONFIG_MODE, Badwars.PLUGIN);
                         p.sendMessage(FINISHED_CONFIG);
                     }
+                }
+                if (e.message().toString().equals("exit")) {
+                    p.removeMetadata(CONFIGURES_GAME, Badwars.PLUGIN);
                 }
             }
         }
