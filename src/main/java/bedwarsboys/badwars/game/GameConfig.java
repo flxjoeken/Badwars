@@ -81,13 +81,13 @@ public class GameConfig {
     //TODO Change to German
     static final String NOT_CONFIGURING_TEAM = "You are not configuring a team.";
 
-    int id;
+
     //TODO configure Spawners chat text + logic
-    String worldName;
+
+    private int id;
+    private String worldName;
     private TeamConfig teamConfig;
     ArrayList<Spawner> spawners;
-    // The GameConfig does not have beds, every team has beds.
-    //ArrayList<Block> beds;
     ArrayList<Location> shopLocations;
 
     public GameConfig() {
@@ -185,6 +185,10 @@ public class GameConfig {
         } catch (IllegalArgumentException ex) {
             return null;
         }
+    }
+
+    public String getWorldName() {
+        return worldName;
     }
 
     public static boolean saveGameConfig() {
