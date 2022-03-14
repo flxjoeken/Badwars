@@ -10,7 +10,6 @@ import java.util.ArrayList;
 //should be implemented in own class?
 public class Team {
 
-
     int maxPlayers;
     ArrayList<Player> players;
     /**
@@ -112,7 +111,5 @@ public class Team {
             }
             return null;
         }
-
     }
-
 }
