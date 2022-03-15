@@ -24,9 +24,9 @@ public class Team {
     /**
      * Every in-game team has a hardcoded team that decides it's name, id and color
      */
-    TEAMS team;
-    Location spawnPoint;
-    Location bedlocation;
+    private TEAMS team;
+    private Location spawnPoint;
+    private Location bedlocation;
 
     /**
      * Create a new Team
@@ -82,6 +82,7 @@ public class Team {
     public void setBedlocation(Location bedlocation) {
         this.bedlocation = bedlocation;
     }
+
     public int getMaxPlayers() {
         return maxPlayers;
     }
