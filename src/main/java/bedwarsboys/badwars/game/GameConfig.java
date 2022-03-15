@@ -151,9 +151,9 @@ public class GameConfig {
         if (!p.hasMetadata(CONFIGURES_GAME) || !p.hasMetadata(CONFIGURING_TEAM)) {
             return null;
         }
-        String name = p.getMetadata(CONFIGURING_TEAM).get(0).asString();
+        int id = p.getMetadata(CONFIGURING_TEAM).get(0).asInt();
         try {
-            return Team.TEAMS.valueOf(name);
+            return Team.TEAMS.byID(id);
         } catch (IllegalArgumentException ex) {
             return null;
         }
