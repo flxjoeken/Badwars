@@ -11,16 +11,16 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-public class Spawner {
+public class SpawnerConfig {
     //should load from Gameconfig
-    static ArrayList<Location> copperSpawner = new ArrayList<>();
-    static ArrayList<Location> ironSpawner = new ArrayList<>();
-    static ArrayList<Location> goldSpawner = new ArrayList<>();
-    static ArrayList<Location> specialSpawner = new ArrayList<>();
+    ArrayList<Location> copperSpawner = new ArrayList<>();
+    ArrayList<Location> ironSpawner = new ArrayList<>();
+    ArrayList<Location> goldSpawner = new ArrayList<>();
+    ArrayList<Location> specialSpawner = new ArrayList<>();
 
-    static ArrayList<BukkitTask> activeSpawners = new ArrayList<>();
+    ArrayList<BukkitTask> activeSpawners = new ArrayList<>();
 
-    public static void startSpawners() {
+    public void startSpawners() {
         activeSpawners.add(Bukkit.getScheduler().runTaskTimer(Badwars.PLUGIN, () -> {
             for (Location l : copperSpawner) {
                 Item drop = l.getWorld().spawn(l, Item.class);
@@ -50,7 +50,7 @@ public class Spawner {
             }
         }, 20*90, 20*90));
     }
-    public static void stopSpawners() {
+    public void stopSpawners() {
         for (BukkitTask t : activeSpawners) {
             t.cancel();
         }

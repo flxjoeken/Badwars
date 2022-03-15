@@ -1,12 +1,13 @@
 package bedwarsboys.badwars.game;
 
 import bedwarsboys.badwars.Badwars;
-import bedwarsboys.badwars.itemspawner.Spawner;
+import bedwarsboys.badwars.itemspawner.SpawnerConfig;
 import bedwarsboys.badwars.team.Team;
 import bedwarsboys.badwars.team.TeamConfig;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,7 +48,8 @@ public class GameConfig {
     private int id;
     private String worldName;
     protected TeamConfig teamConfig;
-    ArrayList<Spawner> spawners;
+    private SpawnerConfig spawnerConfig;
+
     ArrayList<Location> shopLocations;
 
     public GameConfig() {
@@ -57,7 +60,6 @@ public class GameConfig {
         teamConfig = new TeamConfig();
 
         shopLocations = new ArrayList<>();
-        spawners = new ArrayList<>();
     }
 
     /**
@@ -102,6 +104,16 @@ public class GameConfig {
     public static GameConfig getConfig(int id) {
         if (gameConfigs.containsKey(id)) {
             return gameConfigs.get(id);
+        }
+        return null;
+    }
+
+    @Nullable
+    public Team getTeamOfPlayer(Player p) {
+        for (Team t : getTeamConfig().teams) {
+            if (t.getPlayers().contains(p)) {
+                return t;
+            }
         }
         return null;
     }
@@ -153,6 +165,10 @@ public class GameConfig {
 
     public String getWorldName() {
         return worldName;
+    }
+
+    public SpawnerConfig getSpawnerConfig() {
+        return spawnerConfig;
     }
 
     public static boolean saveGameConfig() {
