@@ -7,20 +7,23 @@ import bedwarsboys.badwars.team.TeamConfig;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static bedwarsboys.badwars.BadwarsMessages.*;
 
@@ -29,7 +32,8 @@ import static bedwarsboys.badwars.BadwarsMessages.*;
  *
  * @author felix, aaron
  */
-public class GameConfig {
+@SerializableAs("GameConfig")
+public class GameConfig implements ConfigurationSerializable {
 
     //FixedMetadata Keys
     protected static HashMap<Integer, GameConfig> gameConfigs = new HashMap<>();
@@ -48,7 +52,7 @@ public class GameConfig {
     private int id;
     private String worldName;
     protected TeamConfig teamConfig;
-    private SpawnerConfig spawnerConfig;
+    protected SpawnerConfig spawnerConfig;
 
     ArrayList<Location> shopLocations;
 
@@ -58,7 +62,7 @@ public class GameConfig {
         gameConfigs.put(id, this);
 
         teamConfig = new TeamConfig();
-
+        spawnerConfig = new SpawnerConfig();
         shopLocations = new ArrayList<>();
     }
 
@@ -89,16 +93,6 @@ public class GameConfig {
 
         p.sendMessage(BEGIN_MESSAGE_1);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, () -> p.sendMessage(BEGIN_MESSAGE_2), 80);
-        /*
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Badwars.PLUGIN, () -> {
-            //get the config the Player is configuring
-            GameConfig g = getRunningConfig(p);
-            if (g != null) {
-                //TODO: Open Inventory again if the Player closes it.
-                g.teamConfig.showTeamConfigMenu(p);
-            }
-        }, 80);
-        */
     }
 
     public static GameConfig getConfig(int id) {
@@ -171,19 +165,93 @@ public class GameConfig {
         return spawnerConfig;
     }
 
-    public static boolean saveGameConfig() {
-        //TODO save to Config File
-        return true;
+    public int getId() {
+        return id;
     }
 
-    /**
-     * loads GameConfig from the plugin's configuration file
-     *
-     * @return the configs number, -1 if an error occurred
-     */
-    public static int loadGameConfig() {
-        //TODO load from Config File
-        return 0;
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", id);
+        data.put("worldName", worldName);
+        for (Team t : teamConfig.teams) {
+            String col = t.getTeam().name;
+            data.put("teamConfig." + col + ".active", t.isActive());
+            data.put("teamConfig." + col + ".maxPlayers", t.getMaxPlayers());
+            data.put("teamConfig." + col + ".spawnPoint", t.getSpawnPoint());
+            data.put("teamConfig." + col + ".bedLocation", t.getBedlocation());
+        }
+        int counter = 0;
+        for (Location loc : getSpawnerConfig().getCopperSpawners()) {
+            data.put("spawnerConfig.copper." + counter, loc);
+            counter++;
+        }
+        counter = 0;
+        for (Location loc : getSpawnerConfig().getIronSpawners()) {
+            data.put("spawnerConfig.iron." + counter, loc);
+            counter++;
+        }
+        counter = 0;
+        for (Location loc : getSpawnerConfig().getGoldSpawners()) {
+            data.put("spawnerConfig.gold." + counter, loc);
+            counter++;
+        }
+        counter = 0;
+        for (Location loc : getSpawnerConfig().getSpecialSpawners()) {
+            data.put("spawnerConfig.special." + counter, loc);
+            counter++;
+        }
+        return data;
+    }
+
+    public static GameConfig deserialize(Map<String, Object> args) {
+        GameConfig g = new GameConfig();
+        g.id = (int) args.get("id");
+        g.worldName = (String) args.get("worldName");
+        for (Team t : g.getTeamConfig().teams) {
+            String key;
+            key = "teamConfig." + t.getTeam().name + ".active";
+            if (args.containsKey(key)) {
+                t.setActive((boolean) args.get(key));
+            }
+            key = "teamConfig." + t.getTeam().name + ".maxPlayers";
+            if (args.containsKey(key)) {
+                t.setMaxPlayers((int) args.get(key));
+            }
+            key = "teamConfig." + t.getTeam().name + ".spawnPoint";
+            if (args.containsKey(key)) {
+                t.setSpawnPoint((Location) args.get(key));
+            }
+            key = "teamConfig." + t.getTeam().name + ".bedLocation";
+            if (args.containsKey(key)) {
+                t.setBedlocation((Location) args.get(key));
+            }
+        }
+        int counter = 0;
+        while (args.containsKey("spawnerConfig.copper." + counter)) {
+            Location l = (Location) args.get("spawnerConfig.copper." + counter);
+            g.getSpawnerConfig().getCopperSpawners().add(l);
+            counter++;
+        }
+        counter = 0;
+        while (args.containsKey("spawnerConfig.iron." + counter)) {
+            Location l = (Location) args.get("spawnerConfig.iron." + counter);
+            g.getSpawnerConfig().getIronSpawners().add(l);
+            counter++;
+        }
+        counter = 0;
+        while (args.containsKey("spawnerConfig.gold." + counter)) {
+            Location l = (Location) args.get("spawnerConfig.gold." + counter);
+            g.getSpawnerConfig().getGoldSpawners().add(l);
+            counter++;
+        }
+        counter = 0;
+        while (args.containsKey("spawnerConfig.special." + counter)) {
+            Location l = (Location) args.get("spawnerConfig.special." + counter);
+            g.getSpawnerConfig().getSpecialSpawners().add(l);
+            counter++;
+        }
+        return g;
     }
 
     public static class GameConfigEvents implements Listener {
@@ -244,17 +312,17 @@ public class GameConfig {
                         }
                     }
                     case 4 -> {
-                            if (componentToString(e.message()).equals("fertig")) {
-                                e.setCancelled(true);
-                                //TODO
-                            } else if (((TextComponent) e.message()).content().contains("weiter")) {
-                                e.setCancelled(true);
-                                p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
-                                for (Team.TEAMS t : Team.TEAMS.values()) {
-                                    p.sendMessage(Component.text(t.name).color(t.textColor));
-                                }
-                                p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
+                        if (componentToString(e.message()).equals("fertig")) {
+                            e.setCancelled(true);
+                            //TODO
+                        } else if (((TextComponent) e.message()).content().contains("weiter")) {
+                            e.setCancelled(true);
+                            p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                            for (Team.TEAMS t : Team.TEAMS.values()) {
+                                p.sendMessage(Component.text(t.name).color(t.textColor));
                             }
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
+                        }
                     }
                     case 5 -> {
 

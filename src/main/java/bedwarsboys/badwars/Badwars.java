@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -36,6 +37,8 @@ public final class Badwars extends JavaPlugin {
         // Plugin startup logic
         PLUGIN = this;
         CONFIG = this.getConfig();
+
+        ConfigurationSerialization.registerClass(GameConfig.class, "GameConfig");
 
         //TODO: Maybe! We need to somewhere setup all the team menus for the GameConfig instances
         //TeamConfiguration.setupTeamConfigMenu();
