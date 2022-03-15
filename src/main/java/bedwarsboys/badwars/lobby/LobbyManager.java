@@ -1,5 +1,7 @@
-package bedwarsboys.badwars;
+package bedwarsboys.badwars.lobby;
 
+import bedwarsboys.badwars.Badwars;
+import bedwarsboys.badwars.WorldBlockArea;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

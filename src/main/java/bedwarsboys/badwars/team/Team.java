@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-//should be implemented in own class?
 public class Team {
 
     //Every in-game team has a hardcoded team that decides it's name, id and color
