@@ -49,39 +49,6 @@ public class TeamConfig implements Listener {
     }
 
     void setupTeamConfigMenu() {
-        /*
-        //Plus Banner
-        ItemStack plus = new ItemStack(Material.GREEN_BANNER, 1);
-        ItemMeta plusMeta = plus.getItemMeta();
-        plusMeta.displayName(Component.text("add Team"));
-        plus.setItemMeta(plusMeta);
-        bannerSetup(plus, true);
-
-        //Minus Banner
-        ItemStack minus = new ItemStack(Material.RED_BANNER, 1);
-        ItemMeta minusMeta = minus.getItemMeta();
-        minusMeta.displayName(Component.text("remove Team"));
-        minus.setItemMeta(minusMeta);
-        bannerSetup(minus, false);
-
-        menu.setItem(8, plus);
-        menu.setItem(8 + 9, minus);
-        */
-
-        //menu.setItem(0, new ItemStack(Team.TEAMS.RED.material));
-        //menu.setItem(1, new ItemStack(Team.TEAMS.BLUE.material));
-        /*
-        for (int i = 0; i < 8; i++) {
-            Team.TEAMS t = Team.TEAMS.byID(i);
-            if (t == null) continue;
-            menu.setItem(i, new ItemStack(t.material));
-        }
-        for (int i = 2 * 9; i < 2 * 9 + 8; i++) {
-            Team.TEAMS t = Team.TEAMS.byID(i - 10);
-            if (t == null) continue;
-            menu.setItem(i, new ItemStack(t.material));
-        }
-        */
 
         menu.setItem(8, createHelpBanner());
 
@@ -93,20 +60,6 @@ public class TeamConfig implements Listener {
             if (Team.TEAMS.byID(i - 19) == null) continue;
             menu.setItem(i, new ItemStack(Material.BARRIER));
         }
-        /*
-        Action aPlus = p -> {
-            if (teamCount < 8) {
-                teamCount++;
-                updateTeams();
-            }
-        };
-        Action aMinus = p -> {
-            if (teamCount > 2 && activeTeamCount() > 2) {
-                teamCount--;
-                updateTeams();
-            }
-        };
-        */
         ArrayList<Action> actionList = new ArrayList<>();
         for (int i = 0; i < 9 * 4; i++) {
             int slot = i;
@@ -132,14 +85,6 @@ public class TeamConfig implements Listener {
             if (slot >= 9 * 3 && slot < 9 * 3 + 8) {
                 actionList.add(i, p -> toggleTeamActive(slot - 19, slot));
             }
-            /*
-            if (slot == 8) {
-                actionList.add(slot, aPlus);
-                continue;
-            }
-             only other case is slot==17
-            actionList.add(slot, aMinus);
-            */
         }
         invMenu = new InventoryMenu(menu, actionList.toArray(new Action[0]));
     }
@@ -251,20 +196,6 @@ public class TeamConfig implements Listener {
         lore.add(Component.text(nextLine.toString()));
         return lore;
     }
-
-    /*
-    private void bannerSetup(ItemStack banner, boolean isPlus) {
-        ArrayList<Pattern> patterns = new ArrayList<>();
-        if (isPlus) {
-            patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_CENTER));
-        }
-        patterns.add(new Pattern(DyeColor.BLACK, PatternType.STRIPE_MIDDLE));
-        BannerMeta meta = ((BannerMeta) banner.getItemMeta());
-        meta.displayName(banner.getItemMeta().displayName());
-        meta.setPatterns(patterns);
-        banner.setItemMeta(meta);
-    }
-    */
 
     public boolean joinTeam(Player p, Team.TEAMS team) {
         //TODO
