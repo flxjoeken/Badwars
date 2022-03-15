@@ -43,8 +43,7 @@ public class LobbyManager {
     }
 
     /**
-     * Tries to backup the area that the lobby box would overwrite. If the backup is unsuccessful, you should not
-     * create the box with createLobbyContainer()
+     * Tries to backup the area that the lobby box would overwrite.
      * @return If the backup was successful.
      */
     boolean backupLobbyLocation() {
@@ -64,18 +63,18 @@ public class LobbyManager {
     }
 
     /**
-     * Creates the barrier box at the Location in lobbyLocation. Should only be called if there is a successful
-     * backup of the area, as it will be overwritten.
+     * Creates the barrier box at the Location in lobbyLocation. Also tries to create a backup, and refuses to create
+     * the box, if the backup failed.
      */
-    public void createLobbyContainer() {
+    public boolean createLobbyContainer() {
         if (lobbyLocation == null) {
             Bukkit.getLogger().info("Lobby location not set.");
             loadLobbyLocation();
-            if (lobbyLocation == null) return;
+            if (lobbyLocation == null) return false;
         }
         if (!backupLobbyLocation()) {
             Bukkit.getLogger().info("Will not create container as backup of original area failed. Try reloading the plugin.");
-            return;
+            return false;
         }
         Material b = Material.BARRIER;
         int minX = lobbyLocation.getBlockX() - 4;
@@ -96,6 +95,7 @@ public class LobbyManager {
                 }
             }
         }
+        return true;
     }
 
     /**
