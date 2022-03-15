@@ -121,6 +121,15 @@ public class Team {
             return null;
         }
 
+        public static TEAMS byName(String name){
+            for (TEAMS t : TEAMS.values()){
+                if (t.name.equals(name)){
+                    return t;
+                }
+            }
+            return null;
+        }
+
     }
 
 }
