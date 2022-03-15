@@ -20,6 +20,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static bedwarsboys.badwars.BadwarsMessages.*;
+
 /**
  * Represents a configuration of a Badwars Game. You can let Players configure the Game via Chat.
  *

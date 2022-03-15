@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 
 import java.util.ArrayList;
 
+import static bedwarsboys.badwars.BadwarsMessages.*;
 import static bedwarsboys.badwars.game.GameConfig.*;
 
 /**
