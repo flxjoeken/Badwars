@@ -4,9 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+/**
+ * This class is able to create a box of barriers, save the area it overrides, unload the box and reload the area.
+ */
 public class LobbyManager {
 
+    // The location where the lobby spawn is, where the lobby box will be created
     Location lobbyLocation;
+    // The location where the lobby box will be, should be backup-ed before placing the box
     WorldBlockArea lobbyBackup;
 
 
@@ -15,6 +20,9 @@ public class LobbyManager {
         backupLobbyLocation();
     }
 
+    /**
+     * Loads the location of the lobby box from the config
+     */
     void loadLobbyLocation() {
         int x, y, z;
         String w;
@@ -32,6 +40,11 @@ public class LobbyManager {
         }
     }
 
+    /**
+     * Tries to backup the area that the lobby box would overwrite. If the backup is unsuccessful, you should not
+     * create the box with createLobbyContainer()
+     * @return If the backup was successful.
+     */
     boolean backupLobbyLocation() {
         if (lobbyLocation == null) {
             Bukkit.getLogger().info("Lobby location not set.");
@@ -48,6 +61,10 @@ public class LobbyManager {
         return false;
     }
 
+    /**
+     * Creates the barrier box at the Location in lobbyLocation. Should only be called if there is a successful
+     * backup of the area, as it will be overwritten.
+     */
     public void createLobbyContainer() {
         if (lobbyLocation == null) {
             Bukkit.getLogger().info("Lobby location not set.");
@@ -79,6 +96,9 @@ public class LobbyManager {
         }
     }
 
+    /**
+     * Resets the area where the lobby box is to its original state.
+     */
     public void removeLobbyContainer() {
         lobbyBackup.pasteArea();
     }
