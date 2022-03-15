@@ -4,7 +4,6 @@ import bedwarsboys.badwars.game.GameConfig;
 import bedwarsboys.badwars.invmenu.Action;
 import bedwarsboys.badwars.invmenu.InventoryMenu;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -20,10 +19,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static bedwarsboys.badwars.game.GameConfig.*;
 
