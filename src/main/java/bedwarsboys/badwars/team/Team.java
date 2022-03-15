@@ -10,7 +10,15 @@ import java.util.ArrayList;
 //should be implemented in own class?
 public class Team {
 
+    public boolean isActive() {
+        return isActive;
+    }
 
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    boolean isActive;
     int maxPlayers;
     ArrayList<Player> players;
     /**

@@ -31,10 +31,6 @@ import static bedwarsboys.badwars.game.GameConfig.*;
 public class TeamConfig implements Listener {
 
     //TODO: Simplify Team selection and connect each team with a Team instance.
-    /**
-     * which teams are active
-     */
-    public boolean[] activeTeams = new boolean[Team.TEAMS.values().length];
 
     public ArrayList<Team> teams;
 
@@ -42,9 +38,11 @@ public class TeamConfig implements Listener {
     public InventoryMenu invMenu;
 
     public TeamConfig() {
-        //Arrays.fill(activeTeams, Boolean.TRUE);
-        activeTeams[0] = true;
-        activeTeams[1] = true;
+
+        for (Team.TEAMS t : Team.TEAMS.values()) {
+            teams.add(new Team(t, null));
+        }
+
         setupTeamConfigMenu();
         // initScoreboardTeams();
         updateTeams();
@@ -148,8 +146,8 @@ public class TeamConfig implements Listener {
 
     private int activeTeamCount() {
         int c = 0;
-        for (boolean b : activeTeams) {
-            c += b ? 1 : 0;
+        for (Team t : teams) {
+            c += t.isActive() ? 1 : 0;
         }
         return c;
     }
@@ -164,13 +162,13 @@ public class TeamConfig implements Listener {
         if (menu.getContents()[slot] == null) {
             if (activeTeamCount() > 2) {
                 menu.setItem(slot, new ItemStack(Material.BARRIER));
-                activeTeams[id] = false;
+                teams.get(id).setActive(false);
             } else {
                 Bukkit.getServer().broadcast(Component.text("Not enough teams active"));
             }
         } else {
             menu.setItem(slot, null);
-            activeTeams[id] = true;
+            teams.get(id).setActive(true);
         }
         updateTeams();
     }
@@ -181,7 +179,7 @@ public class TeamConfig implements Listener {
             if (bt.id >= 8) {
                 offset = 18;
             }
-            if (activeTeams[bt.id]) {
+            if (teams.get(bt.id).isActive()) {
                 menu.setItem(bt.id + offset, new ItemStack(bt.material));
             } else {
                 menu.setItem(bt.id + offset, new ItemStack(Material.valueOf(bt.material.name().replace("WOOL", "CARPET"))));
@@ -198,8 +196,8 @@ public class TeamConfig implements Listener {
     public void showSelectTeamMenu(Player p) {
         Inventory iv = Bukkit.createInventory(null, 9 * 2, Component.text("Select Team: "));
         int currentSlot = 0;
-        Action[] actions = new Action[activeTeams.length];
-        for (int i = 0; i < activeTeams.length; i++) {
+        Action[] actions = new Action[teams.size()];
+        for (int i = 0; i < teams.size(); i++) {
             Team.TEAMS t = Team.TEAMS.byID(i);
             if (t != null) {
                 iv.setItem(currentSlot, new ItemStack(t.material));
