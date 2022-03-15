@@ -10,23 +10,13 @@ import java.util.ArrayList;
 //should be implemented in own class?
 public class Team {
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    boolean isActive;
-    int maxPlayers;
-    ArrayList<Player> players;
-    /**
-     * Every in-game team has a hardcoded team that decides it's name, id and color
-     */
-    TEAMS team;
-    Location spawnPoint;
-    Location bedlocation;
+    //Every in-game team has a hardcoded team that decides it's name, id and color
+    private TEAMS team;
+    private boolean isActive;
+    private int maxPlayers;
+    private ArrayList<Player> players = new ArrayList<>();
+    private Location spawnPoint;
+    private Location bedlocation;
 
     /**
      * Create a new Team
@@ -49,6 +39,14 @@ public class Team {
         this.spawnPoint = spawnPoint;
         this.team = team;
         this.maxPlayers = maxPlayers;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -82,6 +80,7 @@ public class Team {
     public void setBedlocation(Location bedlocation) {
         this.bedlocation = bedlocation;
     }
+
     public int getMaxPlayers() {
         return maxPlayers;
     }
@@ -129,6 +128,5 @@ public class Team {
             }
             return null;
         }
-
     }
 }
