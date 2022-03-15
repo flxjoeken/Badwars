@@ -2,12 +2,9 @@ package bedwarsboys.badwars.game;
 
 import bedwarsboys.badwars.Badwars;
 import bedwarsboys.badwars.team.Team;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -17,7 +14,6 @@ public class Game {
 
     protected GameConfig gameConfig;
     protected ArrayList<Player> players;
-    protected ArrayList<Team> teams;
 
     public Game(GameConfig gameConfig) {
         Game.games.add(this);
@@ -25,16 +21,22 @@ public class Game {
         this.players = new ArrayList<>();
     }
 
-    public void startGame() {
+    public boolean startGame() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getWorld().getName().equals(gameConfig.getWorldName())) {
                 players.add(p);
             }
         }
         for (Player p : players) {
-            p.teleport(gameConfig.getTeamOfPlayer(p).getSpawnPoint());
+            Team teamOfPlayer = gameConfig.getTeamOfPlayer(p);
+            if (teamOfPlayer == null) {
+                Bukkit.broadcast(Component.text(Badwars.PLUGIN_NAME + "Error in GameConfig"));
+                return false;
+            }
+            p.teleport(teamOfPlayer.getSpawnPoint());
         }
         gameConfig.getSpawnerConfig().startSpawners();
+        return true;
     }
 
     public void stopGame() {
