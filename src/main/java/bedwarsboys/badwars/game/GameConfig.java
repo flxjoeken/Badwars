@@ -236,7 +236,7 @@ public class GameConfig {
                                 Team team = gameConfig.getTeamConfig().teams.get(t.id);
                                 team.setSpawnPoint(p.getLocation());
                                 team.setActive(true);
-                                Component c = ADDED_SPAWN_MESSAGE.replaceText(TextReplacementConfig.builder().match("%0").replacement(String.valueOf(t.id)).build());
+                                Component c = ADDED_SPAWN_MESSAGE.replaceText(TextReplacementConfig.builder().match("%0").replacement(t.name).build());
                                 p.sendMessage(c);
                                 p.sendMessage(ADD_BED_MESSAGE);
                                 p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 3));
@@ -287,8 +287,10 @@ public class GameConfig {
             Player p = e.getPlayer();
             GameConfig gameConfig = getRunningConfig(p); //gets the gameConfig to change
             if (gameConfig != null && e.getClickedBlock() != null) {
-                if (getRunningConfigMode(p) == 3) {
+                Team.TEAMS t = getRunningConfigTeam(p);
+                if (getRunningConfigMode(p) == 3 && t != null) {
                     p.sendMessage(ADD_TEAM_MESSAGE);
+                    gameConfig.getTeamConfig().teams.get(t.id).setBedlocation(e.getClickedBlock().getLocation());
                     p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 4));
                 }
             }
