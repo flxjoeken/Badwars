@@ -32,7 +32,7 @@ public class TeamConfig implements Listener {
 
     //TODO: Simplify Team selection and connect each team with a Team instance.
 
-    public ArrayList<Team> teams;
+    public ArrayList<Team> teams = new ArrayList<>();
 
     Inventory menu = Bukkit.createInventory(null, 9 * 4, Component.text("Team Configurations"));
     public InventoryMenu invMenu;
