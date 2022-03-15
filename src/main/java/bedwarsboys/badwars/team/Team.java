@@ -20,7 +20,7 @@ public class Team {
 
     boolean isActive;
     int maxPlayers;
-    ArrayList<Player> players;
+    ArrayList<Player> players = new ArrayList<>();
     /**
      * Every in-game team has a hardcoded team that decides it's name, id and color
      */
