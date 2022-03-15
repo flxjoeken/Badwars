@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +20,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,7 +48,7 @@ public class GameConfig {
 
     //TODO configure Spawners chat text + logic
 
-    private int id;
+    protected int id;
     private String worldName;
     protected TeamConfig teamConfig;
     private SpawnerConfig spawnerConfig;
@@ -171,7 +174,47 @@ public class GameConfig {
         return spawnerConfig;
     }
 
-    public static boolean saveGameConfig() {
+    public int getId() {
+        return id;
+    }
+
+    public static boolean saveGameConfig(GameConfig gc) {
+        String fileName = "gameConfig" + gc.getId();
+        YamlConfiguration conf = new YamlConfiguration();
+        conf.set("id", gc.id);
+        conf.set("worldName", gc.worldName);
+        for (Team t : gc.getTeamConfig().teams) {
+            conf.set("teamConfig." + t.getTeam().name + ".maxPlayers", t.getMaxPlayers());
+            conf.set("teamConfig." + t.getTeam().name + ".spawnPoint", t.getSpawnPoint());
+            conf.set("teamConfig." + t.getTeam().name + ".bedLocation", t.getBedlocation());
+            conf.set("teamConfig." + t.getTeam().name + ".active", t.isActive());
+        }
+        int counter = 0;
+        for (Location l : gc.getSpawnerConfig().getCopperSpawner()) {
+            conf.set("spawnerConfig.copperSpawners." + counter, gc.getSpawnerConfig().getCopperSpawner());
+            counter++;
+        }
+        counter = 0;
+        for (Location l : gc.getSpawnerConfig().getIronSpawner()) {
+            conf.set("spawnerConfig.ironSpawners." + counter, gc.getSpawnerConfig().getIronSpawner());
+            counter++;
+        }
+        counter = 0;
+        for (Location l : gc.getSpawnerConfig().getGoldSpawner()) {
+            conf.set("spawnerConfig.goldSpawners." + counter, gc.getSpawnerConfig().getGoldSpawner());
+            counter++;
+        }
+        counter = 0;
+        for (Location l : gc.getSpawnerConfig().getSpecialSpawner()) {
+            conf.set("spawnerConfig.specialSpawners." + counter, gc.getSpawnerConfig().getSpecialSpawner());
+            counter++;
+        }
+        //TODO: Save shops as well
+        try {
+            conf.save(Badwars.PLUGIN.getDataFolder() + "/gameConfigs/" + fileName + ".yml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //TODO save to Config File
         return true;
     }
@@ -179,11 +222,50 @@ public class GameConfig {
     /**
      * loads GameConfig from the plugin's configuration file
      *
-     * @return the configs number, -1 if an error occurred
+     * @return if saving was successful
      */
-    public static int loadGameConfig() {
-        //TODO load from Config File
-        return 0;
+    public static boolean loadGameConfig(int id) {
+        String fileName = "gameConfig" + id;
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(new File(Badwars.PLUGIN.getDataFolder() + "/gameConfigs/" + fileName + ".yml"));
+        if (!conf.isSet("id") || !conf.isSet("worldName")) {
+            GameConfig gc = new GameConfig();
+            gc.id = conf.getInt("id");
+            gc.worldName = conf.getString("worldName");
+            // Load Teams
+            for (Team.TEAMS t : Team.TEAMS.values()) {
+                // Load maxPlayers
+                String path = "teamConfig." + t.name + ".maxPlayers";
+                int maxPlayers = -1;
+                if (conf.isSet(path)){
+                    maxPlayers = conf.getInt(path);
+                }
+                // Load Spawnpoint
+                path = "teamConfig." + t.name + ".spawnPoint";
+                if (conf.isSet(path)) {
+                    // Load everything else only if spawnPoint was set
+                    Team team = new Team(t, conf.getLocation(path));
+                    if (maxPlayers != -1){
+                        team.setMaxPlayers(maxPlayers);
+                    }
+                    // Loading bedLocation
+                    path = "teamConfig." + t.name + ".bedLocation";
+                    if (conf.isSet(path)){
+                        team.setBedlocation(conf.getLocation(path));
+                    }
+                    // Loading active
+                    path = "teamConfig." + t.name + ".active";
+                    if (conf.isSet(path)){
+                        team.setActive(conf.getBoolean(path));
+                    }
+                    gc.getTeamConfig().teams.add(team);
+                }
+            }
+            // Load Spawners
+            //TODO: Load spawners
+            //TODO: Load Shops
+            return true;
+        }
+        return false;
     }
 
     public static class GameConfigEvents implements Listener {
@@ -244,17 +326,17 @@ public class GameConfig {
                         }
                     }
                     case 4 -> {
-                            if (componentToString(e.message()).equals("fertig")) {
-                                e.setCancelled(true);
-                                //TODO
-                            } else if (((TextComponent) e.message()).content().contains("weiter")) {
-                                e.setCancelled(true);
-                                p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
-                                for (Team.TEAMS t : Team.TEAMS.values()) {
-                                    p.sendMessage(Component.text(t.name).color(t.textColor));
-                                }
-                                p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
+                        if (componentToString(e.message()).equals("fertig")) {
+                            e.setCancelled(true);
+                            //TODO
+                        } else if (((TextComponent) e.message()).content().contains("weiter")) {
+                            e.setCancelled(true);
+                            p.sendMessage(SELECT_TEAM_COLOR_MESSAGE);
+                            for (Team.TEAMS t : Team.TEAMS.values()) {
+                                p.sendMessage(Component.text(t.name).color(t.textColor));
                             }
+                            p.setMetadata(GAME_CONFIG_MODE, new FixedMetadataValue(Badwars.PLUGIN, 1));
+                        }
                     }
                     case 5 -> {
 

@@ -88,6 +88,10 @@ public class Team {
         this.maxPlayers = maxPlayers;
     }
 
+    public TEAMS getTeam() {
+        return team;
+    }
+
     public enum TEAMS {
         RED(0, "red", Material.RED_WOOL, NamedTextColor.RED),
         BLUE(1, "blue", Material.BLUE_WOOL, NamedTextColor.BLUE),

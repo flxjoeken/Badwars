@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -29,16 +30,13 @@ public final class Badwars extends JavaPlugin {
     CommandExecutor configureTeamsCommand = new ConfigureTeamsCommand();
     CommandExecutor setTeamSpawnCommand = new SetTeamSpawnCommand();
     CommandExecutor setLobbyCommand = new SetLobbyCommand();
-    CommandExecutor bedwars_DebugCommand = new Bedwars_DebugCommand();
+    CommandExecutor badwars_DebugCommand = new Badwars_DebugCommand();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         PLUGIN = this;
         CONFIG = this.getConfig();
-
-        //TODO: Maybe! We need to somewhere setup all the team menus for the GameConfig instances
-        //TeamConfiguration.setupTeamConfigMenu();
         lobbyManager = new LobbyManager();
 
         Objects.requireNonNull(this.getCommand("setarena")).setExecutor(setArenaCommand);
@@ -48,7 +46,7 @@ public final class Badwars extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("configureteams")).setExecutor(configureTeamsCommand);
         Objects.requireNonNull(this.getCommand("setteamspawn")).setExecutor(setTeamSpawnCommand);
         Objects.requireNonNull(this.getCommand("setlobby")).setExecutor(setLobbyCommand);
-        Objects.requireNonNull(this.getCommand("badwars_debug")).setExecutor(bedwars_DebugCommand);
+        Objects.requireNonNull(this.getCommand("badwars_debug")).setExecutor(badwars_DebugCommand);
         Bukkit.getLogger().info(PLUGIN_NAME + "Loaded Plugin.");
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryMenuActionEvent(), PLUGIN);
         Bukkit.getServer().getPluginManager().registerEvents(new GameConfig.GameConfigEvents(), PLUGIN);

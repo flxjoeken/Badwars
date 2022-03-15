@@ -56,4 +56,36 @@ public class SpawnerConfig {
         }
         activeSpawners.clear();
     }
+
+    public ArrayList<Location> getCopperSpawner() {
+        return copperSpawner;
+    }
+
+    public void setCopperSpawner(ArrayList<Location> copperSpawner) {
+        this.copperSpawner = copperSpawner;
+    }
+
+    public ArrayList<Location> getIronSpawner() {
+        return ironSpawner;
+    }
+
+    public void setIronSpawner(ArrayList<Location> ironSpawner) {
+        this.ironSpawner = ironSpawner;
+    }
+
+    public ArrayList<Location> getGoldSpawner() {
+        return goldSpawner;
+    }
+
+    public void setGoldSpawner(ArrayList<Location> goldSpawner) {
+        this.goldSpawner = goldSpawner;
+    }
+
+    public ArrayList<Location> getSpecialSpawner() {
+        return specialSpawner;
+    }
+
+    public void setSpecialSpawner(ArrayList<Location> specialSpawner) {
+        this.specialSpawner = specialSpawner;
+    }
 }

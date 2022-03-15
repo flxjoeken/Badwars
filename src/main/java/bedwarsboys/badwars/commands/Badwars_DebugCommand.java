@@ -3,17 +3,14 @@ package bedwarsboys.badwars.commands;
 import bedwarsboys.badwars.Badwars;
 import bedwarsboys.badwars.game.Game;
 import bedwarsboys.badwars.game.GameConfig;
-import bedwarsboys.badwars.itemspawner.SpawnerConfig;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class Bedwars_DebugCommand implements CommandExecutor {
+public class Badwars_DebugCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args[0].equalsIgnoreCase("pasteLobby")) {
